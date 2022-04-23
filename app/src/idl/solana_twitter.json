@@ -100,19 +100,23 @@
       }
     }
   ],
-  "errors": [
+  "types": [
     {
-      "code": 6000,
-      "name": "TopicTooLong",
-      "msg": "The provided topic should be 50 characters long maximum."
-    },
-    {
-      "code": 6001,
-      "name": "ContentTooLong",
-      "msg": "The provided content should be 280 characters long maximum."
+      "name": "ErrorCode",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "TopicTooLong"
+          },
+          {
+            "name": "ContentTooLong"
+          }
+        ]
+      }
     }
   ],
   "metadata": {
-    "address": "BNDCEb5uXCuWDxJW9BGmbfvR1JBMAKckfhYrEKW2Bv1W"
+    "address": "3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X"
   }
 }
