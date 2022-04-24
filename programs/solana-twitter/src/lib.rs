@@ -5,7 +5,7 @@ declare_id!("3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X");
 #[program]
 pub mod solana_twitter {
     use super::*;
-    pub fn send_tweet(ctx: Context<SendTweet>, topic: String, content: String) -> ProgramResult {
+    pub fn send_tweet(ctx: Context<SendTweet>, topic: String, content: String, review: f32) -> ProgramResult {
         let tweet: &mut Account<Tweet> = &mut ctx.accounts.tweet;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
@@ -22,6 +22,7 @@ pub mod solana_twitter {
         tweet.timestamp = clock.unix_timestamp;
         tweet.topic = topic;
         tweet.content = content;
+        tweet.review = review;
 
         Ok(())
     }
@@ -77,6 +78,7 @@ pub struct Tweet {
     pub timestamp: i64,
     pub topic: String,
     pub content: String,
+    pub review: f32,
 }
 
 const DISCRIMINATOR_LENGTH: usize = 8;
@@ -85,13 +87,15 @@ const TIMESTAMP_LENGTH: usize = 8;
 const STRING_LENGTH_PREFIX: usize = 4; // Stores the size of the string.
 const MAX_TOPIC_LENGTH: usize = 50 * 4; // 50 chars max.
 const MAX_CONTENT_LENGTH: usize = 280 * 4; // 280 chars max.
+const REVIEW_LENGTH: usize = 32;
 
 impl Tweet {
     const LEN: usize = DISCRIMINATOR_LENGTH
         + PUBLIC_KEY_LENGTH // Author.
         + TIMESTAMP_LENGTH // Timestamp.
         + STRING_LENGTH_PREFIX + MAX_TOPIC_LENGTH // Topic.
-        + STRING_LENGTH_PREFIX + MAX_CONTENT_LENGTH; // Content.
+        + STRING_LENGTH_PREFIX + MAX_CONTENT_LENGTH
+        + REVIEW_LENGTH; // Content.
 }
 
 #[error]
