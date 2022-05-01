@@ -8,9 +8,9 @@ describe('solana-twitter', () => {
     // Configure the client to use the local cluster.
     anchor.setProvider(anchor.Provider.env());
     const program = anchor.workspace.SolanaTwitter as Program<SolanaTwitter>;
-    const sendTweet = async (author, topic, content, review) => {
+    const sendTweet = async (author, topic, content, review, vector) => {
         const tweet = anchor.web3.Keypair.generate();
-        await program.rpc.sendTweet(topic, content, review, {
+        await program.rpc.sendTweet(topic, content, review, vector, {
             accounts: {
                 tweet: tweet.publicKey,
                 author,
@@ -25,7 +25,7 @@ describe('solana-twitter', () => {
     it('can send a new tweet', async () => {
         // Call the "SendTweet" instruction.
         const tweet = anchor.web3.Keypair.generate();
-        await program.rpc.sendTweet('veganism', 'Hummus, am I right?', 3, {
+        await program.rpc.sendTweet('veganism', 'Hummus, am I right?', 3, ['ffdfff', 'gop'], {
             accounts: {
                 tweet: tweet.publicKey,
                 author: program.provider.wallet.publicKey,
@@ -36,35 +36,18 @@ describe('solana-twitter', () => {
 
         // Fetch the account details of the created tweet.
         const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
+        console.log("New Tweet Account: " + tweetAccount.author.toString());
+
+        const tweetAccounts = await program.account.tweet.all();
+        for (let account of tweetAccounts) {
+            console.log("All Tweet Accounts: " + account.account.author.toString());
+        }
 
         // Ensure it has the right data.
         assert.equal(tweetAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
         assert.equal(tweetAccount.topic, 'veganism');
         assert.equal(tweetAccount.content, 'Hummus, am I right?');
         assert.equal(tweetAccount.review, 3);
-        assert.ok(tweetAccount.timestamp);
-    });
-
-    it('can send a new tweet without a topic', async () => {
-        // Call the "SendTweet" instruction.
-        const tweet = anchor.web3.Keypair.generate();
-        await program.rpc.sendTweet('', 'gm', 1, {
-            accounts: {
-                tweet: tweet.publicKey,
-                author: program.provider.wallet.publicKey,
-                systemProgram: anchor.web3.SystemProgram.programId,
-            },
-            signers: [tweet],
-        });
-
-        // Fetch the account details of the created tweet.
-        const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
-
-        // Ensure it has the right data.
-        assert.equal(tweetAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
-        assert.equal(tweetAccount.topic, '');
-        assert.equal(tweetAccount.content, 'gm');
-        assert.equal(tweetAccount.review, 1);
         assert.ok(tweetAccount.timestamp);
     });
 
@@ -76,7 +59,7 @@ describe('solana-twitter', () => {
 
         // Call the "SendTweet" instruction on behalf of this other user.
         const tweet = anchor.web3.Keypair.generate();
-        await program.rpc.sendTweet('veganism', 'Yay Tofu!', 2, {
+        await program.rpc.sendTweet('veganism', 'Yay Tofu!', 2, ['ffdfff'], {
             accounts: {
                 tweet: tweet.publicKey,
                 author: otherUser.publicKey,
@@ -88,6 +71,11 @@ describe('solana-twitter', () => {
         // Fetch the account details of the created tweet.
         const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
 
+        const tweetAccounts = await program.account.tweet.all();
+        for (let account of tweetAccounts) {
+            console.log("All Tweet Accounts: " + account.account.author.toString());
+        }
+
         // Ensure it has the right data.
         assert.equal(tweetAccount.author.toBase58(), otherUser.publicKey.toBase58());
         assert.equal(tweetAccount.topic, 'veganism');
@@ -96,57 +84,46 @@ describe('solana-twitter', () => {
         assert.ok(tweetAccount.timestamp);
     });
 
-    // it('cannot provide a topic with more than 50 characters', async () => {
-    //     try {
-    //         const tweet = anchor.web3.Keypair.generate();
-    //         const topicWith51Chars = 'x'.repeat(51);
-    //         await program.rpc.sendTweet(topicWith51Chars, 'Hummus, am I right?', {
-    //             accounts: {
-    //                 tweet: tweet.publicKey,
-    //                 author: program.provider.wallet.publicKey,
-    //                 systemProgram: anchor.web3.SystemProgram.programId,
-    //             },
-    //             signers: [tweet],
-    //         });
-    //     } catch (error) {
-    //         assert.equal(error.msg, 'The provided topic should be 50 characters long maximum.');
-    //         return;
-    //     }
-
-    //     assert.fail('The instruction should have failed with a 51-character topic.');
-    // });
-
-    // it('cannot provide a content with more than 280 characters', async () => {
-    //     try {
-    //         const tweet = anchor.web3.Keypair.generate();
-    //         const contentWith281Chars = 'x'.repeat(281);
-    //         await program.rpc.sendTweet('veganism', contentWith281Chars, {
-    //             accounts: {
-    //                 tweet: tweet.publicKey,
-    //                 author: program.provider.wallet.publicKey,
-    //                 systemProgram: anchor.web3.SystemProgram.programId,
-    //             },
-    //             signers: [tweet],
-    //         });
-    //     } catch (error) {
-    //         assert.equal(error.msg, 'The provided content should be 280 characters long maximum.');
-    //         return;
-    //     }
-
-    //     assert.fail('The instruction should have failed with a 281-character content.');
-    // });
-
     it('can fetch all tweets', async () => {
         const tweetAccounts = await program.account.tweet.all();
-        assert.equal(tweetAccounts.length, 3);
+        assert.equal(tweetAccounts.length, 2);
+    });
+
+    it('can send another new tweet', async () => {
+        const tweetAccounts = await program.account.tweet.all();
+        let keysToPass = [];
+        for (let tweetAccount of tweetAccounts) {
+            let authorAddress = tweetAccount.account.author.toString()
+            console.log("All Tweet Accounts: " + authorAddress);
+            keysToPass.push(authorAddress);
+        }
+        console.log(keysToPass);
+        // Call the "SendTweet" instruction.
+        const tweet = anchor.web3.Keypair.generate();
+        await program.rpc.sendTweet('taxi-driver', 'a good review', 3, keysToPass, {
+            accounts: {
+                tweet: tweet.publicKey,
+                author: program.provider.wallet.publicKey,
+                systemProgram: anchor.web3.SystemProgram.programId,
+            },
+            signers: [tweet],
+        });
+
+        // Fetch the account details of the created tweet.
+        const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
+
+        // Ensure it has the right data.
+        assert.equal(tweetAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
+        assert.equal(tweetAccount.topic, 'taxi-driver');
+        assert.equal(tweetAccount.content, 'a good review');
+        assert.equal(tweetAccount.review, 3);
+        assert.ok(tweetAccount.timestamp);
     });
 
     it('can verify a tweet', async () => {
         const tweetAccounts = await program.account.tweet.all();
         let theKey = tweetAccounts[0].publicKey;
-        console.log(theKey);
         const verify = anchor.web3.Keypair.generate();
-        console.log(verify);
         await program.rpc.verifyTweet(theKey, {
             accounts: {
                 verify: verify.publicKey,
@@ -196,6 +173,86 @@ describe('solana-twitter', () => {
         }))
     });
 
+    it('can delete a tweet', async () => {
+        // Create a new tweet.
+        const author = program.provider.wallet.publicKey;
+        const tweet = await sendTweet(author, 'solana', 'gm', 1, ['go']);
+
+        // Delete the Tweet.
+        await program.rpc.deleteTweet({
+            accounts: {
+                tweet: tweet.publicKey,
+                author,
+            },
+        });
+
+        // Ensure fetching the tweet account returns null.
+        const tweetAccount = await program.account.tweet.fetchNullable(tweet.publicKey);
+        assert.ok(tweetAccount === null);
+    });
+
+    it('cannot delete someone else\'s tweet', async () => {
+        // Create a new tweet.
+        const author = program.provider.wallet.publicKey;
+        const tweet = await sendTweet(author, 'solana', 'gm', 1, ['run']);
+
+        // Try to delete the Tweet from a different author.
+        try {
+            await program.rpc.deleteTweet({
+                accounts: {
+                    tweet: tweet.publicKey,
+                    author: anchor.web3.Keypair.generate().publicKey,
+                },
+            });
+            assert.fail('We were able to delete someone else\'s tweet.');
+        } catch (error) {
+            // Ensure the tweet account still exists with the right data.
+            const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
+            assert.equal(tweetAccount.topic, 'solana');
+            assert.equal(tweetAccount.content, 'gm');
+        }
+    });
+
+    // it('cannot provide a topic with more than 50 characters', async () => {
+    //     try {
+    //         const tweet = anchor.web3.Keypair.generate();
+    //         const topicWith51Chars = 'x'.repeat(51);
+    //         await program.rpc.sendTweet(topicWith51Chars, 'Hummus, am I right?', {
+    //             accounts: {
+    //                 tweet: tweet.publicKey,
+    //                 author: program.provider.wallet.publicKey,
+    //                 systemProgram: anchor.web3.SystemProgram.programId,
+    //             },
+    //             signers: [tweet],
+    //         });
+    //     } catch (error) {
+    //         assert.equal(error.msg, 'The provided topic should be 50 characters long maximum.');
+    //         return;
+    //     }
+
+    //     assert.fail('The instruction should have failed with a 51-character topic.');
+    // });
+
+    // it('cannot provide a content with more than 280 characters', async () => {
+    //     try {
+    //         const tweet = anchor.web3.Keypair.generate();
+    //         const contentWith281Chars = 'x'.repeat(281);
+    //         await program.rpc.sendTweet('veganism', contentWith281Chars, {
+    //             accounts: {
+    //                 tweet: tweet.publicKey,
+    //                 author: program.provider.wallet.publicKey,
+    //                 systemProgram: anchor.web3.SystemProgram.programId,
+    //             },
+    //             signers: [tweet],
+    //         });
+    //     } catch (error) {
+    //         assert.equal(error.msg, 'The provided content should be 280 characters long maximum.');
+    //         return;
+    //     }
+
+    //     assert.fail('The instruction should have failed with a 281-character content.');
+    // });
+
     // it('can update a tweet', async () => {
     //     // Send a tweet and fetch its account.
     //     const author = program.provider.wallet.publicKey;
@@ -221,65 +278,4 @@ describe('solana-twitter', () => {
     //     assert.equal(updatedTweetAccount.content, 'gm everyone!');
     // });
 
-    it('cannot update someone else\'s tweet', async () => {
-        // Send a tweet.
-        const author = program.provider.wallet.publicKey;
-        const tweet = await sendTweet(author, 'solana', 'Solana is awesome!');
-
-        // Update the Tweet.
-        try {
-            await program.rpc.updateTweet('eth', 'Ethereum is awesome!', {
-                accounts: {
-                    tweet: tweet.publicKey,
-                    author: anchor.web3.Keypair.generate().publicKey,
-                },
-            });
-            assert.fail('We were able to update someone else\'s tweet.');
-        } catch (error) {
-            // Ensure the tweet account kept the initial data.
-            const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
-            assert.equal(tweetAccount.topic, 'solana');
-            assert.equal(tweetAccount.content, 'Solana is awesome!');
-        }
-    });
-
-    it('can delete a tweet', async () => {
-        // Create a new tweet.
-        const author = program.provider.wallet.publicKey;
-        const tweet = await sendTweet(author, 'solana', 'gm');
-
-        // Delete the Tweet.
-        await program.rpc.deleteTweet({
-            accounts: {
-                tweet: tweet.publicKey,
-                author,
-            },
-        });
-
-        // Ensure fetching the tweet account returns null.
-        const tweetAccount = await program.account.tweet.fetchNullable(tweet.publicKey);
-        assert.ok(tweetAccount === null);
-    });
-
-    it('cannot delete someone else\'s tweet', async () => {
-        // Create a new tweet.
-        const author = program.provider.wallet.publicKey;
-        const tweet = await sendTweet(author, 'solana', 'gm');
-
-        // Try to delete the Tweet from a different author.
-        try {
-            await program.rpc.deleteTweet({
-                accounts: {
-                    tweet: tweet.publicKey,
-                    author: anchor.web3.Keypair.generate().publicKey,
-                },
-            });
-            assert.fail('We were able to delete someone else\'s tweet.');
-        } catch (error) {
-            // Ensure the tweet account still exists with the right data.
-            const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
-            assert.equal(tweetAccount.topic, 'solana');
-            assert.equal(tweetAccount.content, 'gm');
-        }
-    });
 });

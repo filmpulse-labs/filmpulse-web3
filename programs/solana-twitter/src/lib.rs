@@ -6,10 +6,14 @@ declare_id!("3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X");
 #[program]
 pub mod solana_twitter {
     use super::*;
-    pub fn send_tweet(ctx: Context<SendTweet>, topic: String, content: String, review: i32) -> ProgramResult {
+    pub fn send_tweet(ctx: Context<SendTweet>, topic: String, content: String, review: i32, my_vec: Vec<String>) -> ProgramResult {
         let tweet: &mut Account<Tweet> = &mut ctx.accounts.tweet;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
+
+        if topic.chars().count() < 1 {
+            return Err(ErrorCode::TopicRequired.into())
+        }
 
         if topic.chars().count() > 50 {
             return Err(ErrorCode::TopicTooLong.into())
@@ -149,4 +153,6 @@ pub enum ErrorCode {
     TopicTooLong,
     #[msg("The provided content should be 280 characters long maximum.")]
     ContentTooLong,
+    #[msg("Topic Required.")]
+    TopicRequired,
 }
