@@ -4,42 +4,51 @@ use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
 declare_id!("3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X");
 
 #[program]
-pub mod solana_twitter {
+pub mod solana_filmpulse {
     use super::*;
-    pub fn send_tweet(ctx: Context<SendTweet>, topic: String, content: String, review: i32, my_vec: Vec<String>) -> ProgramResult {
-        let tweet: &mut Account<Tweet> = &mut ctx.accounts.tweet;
+    pub fn post_review(ctx: Context<PostReview>, title: String, essay: String, rating: i32, author_keys: Vec<String>) -> ProgramResult {
+        let review: &mut Account<Review> = &mut ctx.accounts.review;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
 
-        if topic.chars().count() < 1 {
+        // if author_keys.len() > 1 {
+            
+        //     let tokenDistribution: usize = 1/author_keys.len();
+
+        //     for address in my_vec {
+        //         token::transfer(address, tokenDistribution)?;
+        //     }
+        // }
+
+        if title.chars().count() < 1 {
             return Err(ErrorCode::TopicRequired.into())
         }
 
-        if topic.chars().count() > 50 {
+        if title.chars().count() > 50 {
             return Err(ErrorCode::TopicTooLong.into())
         }
 
-        if content.chars().count() > 280 {
+        if essay.chars().count() > 280 {
             return Err(ErrorCode::ContentTooLong.into())
         }
 
-        tweet.author = *author.key;
-        tweet.timestamp = clock.unix_timestamp;
-        tweet.topic = topic;
-        tweet.content = content;
-        tweet.review = review;
+        review.author = *author.key;
+        review.timestamp = clock.unix_timestamp;
+        review.title = title;
+        review.essay = essay;
+        review.rating = rating;
 
         Ok(())
     }
 
-    pub fn verify_tweet(ctx: Context<VerifyTweet>, tweet_key: Pubkey) -> ProgramResult {
+    pub fn verify_review(ctx: Context<VerifyReview>, review_key: Pubkey) -> ProgramResult {
         let verify: &mut Account<Verify> = &mut ctx.accounts.verify;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
 
         verify.author = *author.key;
         verify.timestamp = clock.unix_timestamp;
-        verify.tweet_key = tweet_key;
+        verify.review_key = review_key;
 
         Ok(())
     }
@@ -52,22 +61,22 @@ pub mod solana_twitter {
         Ok(())
     }
 
-    pub fn delete_tweet(_ctx: Context<DeleteTweet>) -> ProgramResult {
+    pub fn delete_review(_ctx: Context<DeleteReview>) -> ProgramResult {
         Ok(())
     }
 }
 
 #[derive(Accounts)]
-pub struct SendTweet<'info> {
-    #[account(init, payer = author, space = Tweet::LEN)]
-    pub tweet: Account<'info, Tweet>,
+pub struct PostReview<'info> {
+    #[account(init, payer = author, space = Review::LEN)]
+    pub review: Account<'info, Review>,
     #[account(mut)]
     pub author: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
 #[derive(Accounts)]
-pub struct VerifyTweet<'info> {
+pub struct VerifyReview<'info> {
     #[account(init, payer = author, space = Verify::LEN)]
     pub verify: Account<'info, Verify>,
     #[account(mut)]
@@ -87,26 +96,26 @@ pub struct TransferWrapper<'info> {
 }
 
 #[derive(Accounts)]
-pub struct DeleteTweet<'info> {
+pub struct DeleteReview<'info> {
     #[account(mut, has_one = author, close = author)]
-    pub tweet: Account<'info, Tweet>,
+    pub review: Account<'info, Review>,
     pub author: Signer<'info>,
 }
 
 #[account]
-pub struct Tweet {
+pub struct Review {
     pub author: Pubkey,
     pub timestamp: i64,
-    pub topic: String,
-    pub content: String,
-    pub review: i32,
+    pub title: String,
+    pub essay: String,
+    pub rating: i32,
 }
 
 #[account]
 pub struct Verify {
     pub author: Pubkey,
     pub timestamp: i64,
-    pub tweet_key: Pubkey,
+    pub review_key: Pubkey,
 }
 
 const DISCRIMINATOR_LENGTH: usize = 8;
@@ -117,7 +126,7 @@ const MAX_TOPIC_LENGTH: usize = 50 * 4; // 50 chars max.
 const MAX_CONTENT_LENGTH: usize = 280 * 4; // 280 chars max.
 const REVIEW_LENGTH: usize = 32;
 
-impl Tweet {
+impl Review {
     const LEN: usize = DISCRIMINATOR_LENGTH
         + PUBLIC_KEY_LENGTH // Author.
         + TIMESTAMP_LENGTH // Timestamp.

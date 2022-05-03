@@ -1130,7 +1130,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "solana-twitter"
+name = "solana_filmpulse"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
