@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer};
+use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer, MintTo};
 
 declare_id!("3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X");
 
@@ -12,24 +12,23 @@ pub mod solana_filmpulse {
         let clock: Clock = Clock::get().unwrap();
 
         // if author_keys.len() > 1 {
-            
         //     let tokenDistribution: usize = 1/author_keys.len();
 
-        //     for address in my_vec {
+        //     for address in author_keys {
         //         token::transfer(address, tokenDistribution)?;
         //     }
         // }
 
         if title.chars().count() < 1 {
-            return Err(ErrorCode::TopicRequired.into())
+            return Err(ErrorCode::TitleRequired.into())
         }
 
         if title.chars().count() > 50 {
-            return Err(ErrorCode::TopicTooLong.into())
+            return Err(ErrorCode::TitleTooLong.into())
         }
 
         if essay.chars().count() > 280 {
-            return Err(ErrorCode::ContentTooLong.into())
+            return Err(ErrorCode::ReviewTooLong.into())
         }
 
         review.author = *author.key;
@@ -41,10 +40,22 @@ pub mod solana_filmpulse {
         Ok(())
     }
 
-    pub fn verify_review(ctx: Context<VerifyReview>, review_key: Pubkey) -> ProgramResult {
+    pub fn verify_review(ctx: Context<VerifyReview>, review_key: Pubkey, author_address: Pubkey, verifier_keys: Vec<String>) -> ProgramResult {
         let verify: &mut Account<Verify> = &mut ctx.accounts.verify;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
+
+        // if author != author_address {
+        //     token::mintto(author_address, 1)?;
+        // }
+
+        // if verifier_keys.len() > 1 {
+        //     let tokenDistribution: usize = 1/verifier_keys.len();
+
+        //     for address in verifier_keys {
+        //         token::transfer(address, tokenDistribution)?;
+        //     }
+        // }
 
         verify.author = *author.key;
         verify.timestamp = clock.unix_timestamp;
@@ -158,10 +169,10 @@ impl<'info> TransferWrapper<'info> {
 
 #[error]
 pub enum ErrorCode {
-    #[msg("The provided topic should be 50 characters long maximum.")]
-    TopicTooLong,
-    #[msg("The provided content should be 280 characters long maximum.")]
-    ContentTooLong,
+    #[msg("The provided title should be 50 characters long maximum.")]
+    TitleTooLong,
+    #[msg("The provided review should be 280 characters long maximum.")]
+    ReviewTooLong,
     #[msg("Topic Required.")]
-    TopicRequired,
+    TitleRequired,
 }
