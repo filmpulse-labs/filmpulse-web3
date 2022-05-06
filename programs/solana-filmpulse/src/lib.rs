@@ -6,19 +6,11 @@ declare_id!("3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X");
 #[program]
 pub mod solana_filmpulse {
     use super::*;
-    pub fn post_review(ctx: Context<PostReview>, title: String, essay: String, rating: i32, author_keys: Vec<String>) -> ProgramResult {
+    pub fn post_review(ctx: Context<PostReview>, title: String, essay: String, rating: i32, author_keys: Vec<Pubkey>) -> ProgramResult {
         let review: &mut Account<Review> = &mut ctx.accounts.review;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
-
-        // if author_keys.len() > 1 {
-        //     let tokenDistribution: usize = 1/author_keys.len();
-
-        //     for address in author_keys {
-        //         token::transfer(address, tokenDistribution)?;
-        //     }
-        // }
-
+        
         if title.chars().count() < 1 {
             return Err(ErrorCode::TitleRequired.into())
         }
@@ -37,6 +29,13 @@ pub mod solana_filmpulse {
         review.essay = essay;
         review.rating = rating;
 
+        // let authors: usize = author_keys.len();
+        // let tokenDistribution: usize = 1/authors;
+
+        // for address in author_keys {
+        //     token::transfer (address: Pubkey, tokenDistribution: usize)?;
+        // }
+
         Ok(())
     }
 
@@ -45,21 +44,20 @@ pub mod solana_filmpulse {
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
 
-        // if author != author_address {
-        //     token::mintto(author_address, 1)?;
-        // }
-
-        // if verifier_keys.len() > 1 {
-        //     let tokenDistribution: usize = 1/verifier_keys.len();
-
-        //     for address in verifier_keys {
-        //         token::transfer(address, tokenDistribution)?;
-        //     }
-        // }
-
         verify.author = *author.key;
         verify.timestamp = clock.unix_timestamp;
         verify.review_key = review_key;
+
+        // let totalSupply: u64 = 100000000;
+        // let currentSupply: u64 = 21000420;
+        // let notMinted: u64 = totalSupply - currentSupply;
+        // let mintAmount: u64 = notMinted/totalSupply;
+        // token::mint_to(author_address: Pubkey, mintAmount: u64)?;
+
+        // let tokenDistribution: u64 = 1/verifier_keys.len();
+        // for address in verifier_keys {
+        //     token::transfer(address: Pubkey, tokenDistribution: u64)?;
+        // }
 
         Ok(())
     }
