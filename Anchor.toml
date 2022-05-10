@@ -1,11 +1,11 @@
 [programs.localnet]
-solana_filmpulse = "2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43"
+solana_gopulse = "2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43"
 
 [programs.devnet]
-solana_filmpulse = "2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43"
+solana_gopulse = "2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43"
 
 [programs.mainnet]
-solana_filmpulse = "BNDCEb5uXCuWDxJW9BGmbfvR1JBMAKckfhYrEKW2Bv1W"
+solana_gopulse = "BNDCEb5uXCuWDxJW9BGmbfvR1JBMAKckfhYrEKW2Bv1W"
 
 [registry]
 url = "https://anchor.projectserum.com"
@@ -16,4 +16,4 @@ wallet = "/home/tomdevito27/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
-copy-idl = "mkdir -p app/src/idl && cp target/idl/solana_filmpulse.json app/src/idl/solana_filmpulse.json"
+copy-idl = "mkdir -p app/src/idl && cp target/idl/solana_gopulse.json app/src/idl/solana_gopulse.json"

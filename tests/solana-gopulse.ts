@@ -8,9 +8,9 @@ describe('solana-gopulse', () => {
     // Configure the client to use the local cluster.
     anchor.setProvider(anchor.Provider.env());
     const program = anchor.workspace.SolanaGopulse as Program<SolanaGopulse>;
-    const postContent = async (author, title, essay, rating, authorKeys) => {
+    const postContent = async (author, primaryTag, primaryContent, tag0, authorKeys) => {
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent(title, essay, rating, authorKeys, {
+        await program.rpc.postContent(primaryTag, primaryContent, tag0, authorKeys, {
             accounts: {
                 content: content.publicKey,
                 author,
@@ -23,7 +23,7 @@ describe('solana-gopulse', () => {
     }
 
     it('can post new content', async () => {
-        // Call the "SendTweet" instruction.
+        // Call the "postContent" instruction.
         const content = anchor.web3.Keypair.generate();
         await program.rpc.postContent('dune', 'a good review', 3, ['ffdfff', 'gop'], {
             accounts: {
@@ -34,21 +34,21 @@ describe('solana-gopulse', () => {
             signers: [content],
         });
 
-        // Fetch the account details of the created tweet.
-        const reviewAccount = await program.account.content.fetch(content.publicKey);
-        console.log("New Review Account: " + reviewAccount.author.toString());
+        // Fetch the account details of the created content.
+        const contentAccount = await program.account.content.fetch(content.publicKey);
+        console.log("New Content Account: " + contentAccount.author.toString());
 
-        const reviewAccounts = await program.account.content.all();
-        for (let review of reviewAccounts) {
-            console.log("All Review Accounts: " + review.account.author.toString());
+        const contentAccounts = await program.account.content.all();
+        for (let content of contentAccounts) {
+            console.log("All Content Accounts: " + content.account.author.toString());
         }
 
         // Ensure it has the right data.
-        assert.equal(reviewAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
-        assert.equal(reviewAccount.title, 'dune');
-        assert.equal(reviewAccount.essay, 'a good review');
-        assert.equal(reviewAccount.rating, 3);
-        assert.ok(reviewAccount.timestamp);
+        assert.equal(contentAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
+        assert.equal(contentAccount.title, 'dune');
+        assert.equal(contentAccount.essay, 'a good review');
+        assert.equal(contentAccount.rating, 3);
+        assert.ok(contentAccount.timestamp);
     });
 
     it('can post a new review from a different author', async () => {
