@@ -1,13 +1,13 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Mint, Token, TokenAccount, Transfer, MintTo};
 
-declare_id!("3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X");
+declare_id!("2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43");
 
 #[program]
-pub mod solana_filmpulse {
+pub mod solana_gopulse {
     use super::*;
-    pub fn post_review(ctx: Context<PostReview>, title: String, essay: String, rating: i32, author_keys: Vec<Pubkey>) -> ProgramResult {
-        let review: &mut Account<Review> = &mut ctx.accounts.review;
+    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, rating: i32, author_keys: Vec<String>) -> ProgramResult {
+        let content: &mut Account<Content> = &mut ctx.accounts.content;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
         
@@ -23,11 +23,11 @@ pub mod solana_filmpulse {
             return Err(ErrorCode::ReviewTooLong.into())
         }
 
-        review.author = *author.key;
-        review.timestamp = clock.unix_timestamp;
-        review.title = title;
-        review.essay = essay;
-        review.rating = rating;
+        content.author = *author.key;
+        content.timestamp = clock.unix_timestamp;
+        content.title = title;
+        content.essay = essay;
+        content.rating = rating;
 
         // let authors: usize = author_keys.len();
         // let tokenDistribution: usize = 1/authors;
@@ -39,7 +39,7 @@ pub mod solana_filmpulse {
         Ok(())
     }
 
-    pub fn verify_review(ctx: Context<VerifyReview>, review_key: Pubkey, author_address: Pubkey, verifier_keys: Vec<String>) -> ProgramResult {
+    pub fn verify_review(ctx: Context<VerifyReview>, review_key: Pubkey) -> ProgramResult {
         let verify: &mut Account<Verify> = &mut ctx.accounts.verify;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
@@ -69,16 +69,12 @@ pub mod solana_filmpulse {
         msg!("remaining tokens: {}", ctx.accounts.sender_token.amount);
         Ok(())
     }
-
-    pub fn delete_review(_ctx: Context<DeleteReview>) -> ProgramResult {
-        Ok(())
-    }
 }
 
 #[derive(Accounts)]
-pub struct PostReview<'info> {
-    #[account(init, payer = author, space = Review::LEN)]
-    pub review: Account<'info, Review>,
+pub struct PostContent<'info> {
+    #[account(init, payer = author, space = Content::LEN)]
+    pub content: Account<'info, Content>,
     #[account(mut)]
     pub author: Signer<'info>,
     pub system_program: Program<'info, System>,
@@ -104,15 +100,8 @@ pub struct TransferWrapper<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-#[derive(Accounts)]
-pub struct DeleteReview<'info> {
-    #[account(mut, has_one = author, close = author)]
-    pub review: Account<'info, Review>,
-    pub author: Signer<'info>,
-}
-
 #[account]
-pub struct Review {
+pub struct Content {
     pub author: Pubkey,
     pub timestamp: i64,
     pub title: String,
@@ -135,7 +124,7 @@ const MAX_TOPIC_LENGTH: usize = 50 * 4; // 50 chars max.
 const MAX_CONTENT_LENGTH: usize = 280 * 4; // 280 chars max.
 const REVIEW_LENGTH: usize = 32;
 
-impl Review {
+impl Content {
     const LEN: usize = DISCRIMINATOR_LENGTH
         + PUBLIC_KEY_LENGTH // Author.
         + TIMESTAMP_LENGTH // Timestamp.

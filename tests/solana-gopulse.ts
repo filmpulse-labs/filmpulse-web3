@@ -1,44 +1,44 @@
 import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
-import { SolanaFilmpulse } from '../target/types/solana_filmpulse';
+import { SolanaGopulse } from '../target/types/solana_gopulse';
 import * as assert from "assert";
 import * as bs58 from "bs58";
 
-describe('solana-filmpulse', () => {
+describe('solana-gopulse', () => {
     // Configure the client to use the local cluster.
     anchor.setProvider(anchor.Provider.env());
-    const program = anchor.workspace.SolanaFilmpulse as Program<SolanaFilmpulse>;
-    const postReview = async (author, title, essay, rating, authorKeys) => {
-        const review = anchor.web3.Keypair.generate();
-        await program.rpc.postReview(title, essay, rating, authorKeys, {
+    const program = anchor.workspace.SolanaGopulse as Program<SolanaGopulse>;
+    const postContent = async (author, title, essay, rating, authorKeys) => {
+        const content = anchor.web3.Keypair.generate();
+        await program.rpc.postContent(title, essay, rating, authorKeys, {
             accounts: {
-                review: review.publicKey,
+                content: content.publicKey,
                 author,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
-            signers: [review],
+            signers: [content],
         });
 
-        return review
+        return content
     }
 
-    it('can post a new review', async () => {
+    it('can post new content', async () => {
         // Call the "SendTweet" instruction.
-        const review = anchor.web3.Keypair.generate();
-        await program.rpc.postReview('dune', 'a good review', 3, ['ffdfff', 'gop'], {
+        const content = anchor.web3.Keypair.generate();
+        await program.rpc.postContent('dune', 'a good review', 3, ['ffdfff', 'gop'], {
             accounts: {
-                review: review.publicKey,
+                content: content.publicKey,
                 author: program.provider.wallet.publicKey,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
-            signers: [review],
+            signers: [content],
         });
 
         // Fetch the account details of the created tweet.
-        const reviewAccount = await program.account.review.fetch(review.publicKey);
+        const reviewAccount = await program.account.content.fetch(content.publicKey);
         console.log("New Review Account: " + reviewAccount.author.toString());
 
-        const reviewAccounts = await program.account.review.all();
+        const reviewAccounts = await program.account.content.all();
         for (let review of reviewAccounts) {
             console.log("All Review Accounts: " + review.account.author.toString());
         }
@@ -58,20 +58,20 @@ describe('solana-filmpulse', () => {
         await program.provider.connection.confirmTransaction(signature);
 
         // Call the "SendTweet" instruction on behalf of this other user.
-        const review = anchor.web3.Keypair.generate();
-        await program.rpc.postReview('taxi-driver', 'Yay taxis', 2, ['ffdfff'], {
+        const content = anchor.web3.Keypair.generate();
+        await program.rpc.postContent('taxi-driver', 'Yay taxis', 2, ['ffdfff'], {
             accounts: {
-                review: review.publicKey,
+                content: content.publicKey,
                 author: otherUser.publicKey,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
-            signers: [otherUser, review],
+            signers: [otherUser, content],
         });
 
         // Fetch the account details of the created tweet.
-        const reviewAccount = await program.account.review.fetch(review.publicKey);
+        const reviewAccount = await program.account.content.fetch(content.publicKey);
 
-        const reviewAccounts = await program.account.review.all();
+        const reviewAccounts = await program.account.content.all();
         for (let review of reviewAccounts) {
             console.log("All Review Accounts: " + review.account.author.toString());
         }
@@ -85,12 +85,12 @@ describe('solana-filmpulse', () => {
     });
 
     it('can fetch all reviews', async () => {
-        const reviewAccounts = await program.account.review.all();
+        const reviewAccounts = await program.account.content.all();
         assert.equal(reviewAccounts.length, 2);
     });
 
     it('can send another new review', async () => {
-        const reviewAccounts = await program.account.review.all();
+        const reviewAccounts = await program.account.content.all();
         let keysToPass = [];
         for (let reviewAccount of reviewAccounts) {
             let authorAddress = reviewAccount.account.author.toString()
@@ -99,18 +99,18 @@ describe('solana-filmpulse', () => {
         }
         console.log(keysToPass);
         // Call the "postReview" instruction.
-        const review = anchor.web3.Keypair.generate();
-        await program.rpc.postReview('dune', 'another good review', 3, keysToPass, {
+        const content = anchor.web3.Keypair.generate();
+        await program.rpc.postContent('dune', 'another good review', 3, keysToPass, {
             accounts: {
-                review: review.publicKey,
+                content: content.publicKey,
                 author: program.provider.wallet.publicKey,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
-            signers: [review],
+            signers: [content],
         });
 
         // Fetch the account details of the created tweet.
-        const reviewAccount = await program.account.review.fetch(review.publicKey);
+        const reviewAccount = await program.account.content.fetch(content.publicKey);
 
         // Ensure it has the right data.
         assert.equal(reviewAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
@@ -121,7 +121,7 @@ describe('solana-filmpulse', () => {
     });
 
     it('can verify a review', async () => {
-        const reviewAccounts = await program.account.review.all();
+        const reviewAccounts = await program.account.content.all();
         let theKey = reviewAccounts[0].publicKey;
         const verify = anchor.web3.Keypair.generate();
         await program.rpc.verifyReview(theKey, {
@@ -139,7 +139,7 @@ describe('solana-filmpulse', () => {
 
     it('can filter reviews by author', async () => {
         const authorPublicKey = program.provider.wallet.publicKey
-        const reviewAccounts = await program.account.review.all([
+        const reviewAccounts = await program.account.content.all([
             {
                 memcmp: {
                     offset: 8, // Discriminator.
@@ -155,7 +155,7 @@ describe('solana-filmpulse', () => {
     });
 
     it('can filter reviews by topic', async () => {
-        const reviewAccounts = await program.account.review.all([
+        const reviewAccounts = await program.account.content.all([
             {
                 memcmp: {
                     offset: 8 + // Discriminator.
@@ -171,46 +171,6 @@ describe('solana-filmpulse', () => {
         assert.ok(reviewAccounts.every(reviewAccount => {
             return reviewAccount.account.title === 'dune'
         }))
-    });
-
-    it('can delete a review', async () => {
-        // Create a new review.
-        const author = program.provider.wallet.publicKey;
-        const review = await postReview(author, 'solana', 'gm', 1, ['go']);
-
-        // Delete the Review.
-        await program.rpc.deleteReview({
-            accounts: {
-                review: review.publicKey,
-                author,
-            },
-        });
-
-        // Ensure fetching the review account returns null.
-        const reviewAccount = await program.account.review.fetchNullable(review.publicKey);
-        assert.ok(reviewAccount === null);
-    });
-
-    it('cannot delete someone else\'s review', async () => {
-        // Create a new review.
-        const author = program.provider.wallet.publicKey;
-        const review = await postReview(author, 'solana', 'gm', 1, ['run']);
-
-        // Try to delete the Review from a different author.
-        try {
-            await program.rpc.deleteReview({
-                accounts: {
-                    review: review.publicKey,
-                    author: anchor.web3.Keypair.generate().publicKey,
-                },
-            });
-            assert.fail('We were able to delete someone else\'s review.');
-        } catch (error) {
-            // Ensure the review account still exists with the right data.
-            const reviewAccount = await program.account.review.fetch(review.publicKey);
-            assert.equal(reviewAccount.title, 'solana');
-            assert.equal(reviewAccount.essay, 'gm');
-        }
     });
 
     // it('cannot provide a title with more than 50 characters', async () => {

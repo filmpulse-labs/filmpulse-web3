@@ -1,8 +1,8 @@
 [programs.localnet]
-solana_filmpulse = "3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X"
+solana_filmpulse = "2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43"
 
 [programs.devnet]
-solana_filmpulse = "3gqTAW1iCFa8GuFZ9SdpmTVb1a4JzfXHXyBfhmMS2Z7X"
+solana_filmpulse = "2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43"
 
 [programs.mainnet]
 solana_filmpulse = "BNDCEb5uXCuWDxJW9BGmbfvR1JBMAKckfhYrEKW2Bv1W"
