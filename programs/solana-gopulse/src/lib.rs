@@ -6,7 +6,7 @@ declare_id!("2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43");
 #[program]
 pub mod solana_gopulse {
     use super::*;
-    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, rating: i32, author_keys: Vec<String>) -> ProgramResult {
+    pub fn post_content(ctx: Context<Postontent>, title: String, essay: String, rating: i32, author_keys: Vec<String>) -> ProgramResult {
         let content: &mut Account<Content> = &mut ctx.accounts.content;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
