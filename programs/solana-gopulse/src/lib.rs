@@ -6,7 +6,7 @@ declare_id!("2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43");
 #[program]
 pub mod solana_gopulse {
     use super::*;
-    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, rating: i32, author_keys: Vec<String>) -> ProgramResult {
+    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, rating: i32, _author_keys: Vec<String>) -> ProgramResult {
         let content: &mut Account<Content> = &mut ctx.accounts.content;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
@@ -62,12 +62,12 @@ pub mod solana_gopulse {
         Ok(())
     }
 
-    pub fn transfer_wrapper(ctx: Context<TransferWrapper>, amount: u64) -> ProgramResult {
-        msg!("starting tokens: {}", ctx.accounts.sender_token.amount);
-        token::transfer(ctx.accounts.transfer_ctx(), amount)?;
-        ctx.accounts.sender_token.reload()?;
-        msg!("remaining tokens: {}", ctx.accounts.sender_token.amount);
-        Ok(())
+    pub fn proxy_transfer(ctx: Context<ProxyTransfer>, amount: u64) -> ProgramResult {
+        token::transfer(ctx.accounts.into(), amount)
+    }
+
+    pub fn proxy_mint_to(ctx: Context<ProxyMintTo>, amount: u64) -> ProgramResult {
+        token::mint_to(ctx.accounts.into(), amount)
     }
 }
 
@@ -90,13 +90,22 @@ pub struct VerifyReview<'info> {
 }
 
 #[derive(Accounts)]
-pub struct TransferWrapper<'info> {
-    pub sender: Signer<'info>,
+pub struct ProxyTransfer<'info> {
+    pub authority: Signer<'info>,
     #[account(mut)]
-    pub sender_token: Account<'info, TokenAccount>,
+    pub from: Account<'info, TokenAccount>,
     #[account(mut)]
-    pub receiver_token: Account<'info, TokenAccount>,
+    pub to: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct ProxyMintTo<'info> {
+    pub authority: Signer<'info>,
+    #[account(mut)]
     pub mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub to: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
 }
 
@@ -138,19 +147,33 @@ impl Verify {
         + PUBLIC_KEY_LENGTH // TweetKey.
         + TIMESTAMP_LENGTH // Timestamp.
         + PUBLIC_KEY_LENGTH; // Verifier.
-        
 }
 
-impl<'info> TransferWrapper<'info> {
-    fn transfer_ctx(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
-        CpiContext::new(
-            self.token_program.to_account_info(),
-            Transfer {
-                from: self.sender_token.to_account_info(),
-                to: self.receiver_token.to_account_info(),
-                authority: self.sender.to_account_info(),
-            },
-        )
+impl<'a, 'b, 'c, 'info> From<&mut ProxyTransfer<'info>>
+    for CpiContext<'a, 'b, 'c, 'info, Transfer<'info>>
+{
+    fn from(accounts: &mut ProxyTransfer<'info>) -> CpiContext<'a, 'b, 'c, 'info, Transfer<'info>> {
+        let cpi_accounts = Transfer {
+            from: accounts.from.to_account_info(),
+            to: accounts.to.to_account_info(),
+            authority: accounts.authority.to_account_info(),
+        };
+        let cpi_program = accounts.token_program.to_account_info();
+        CpiContext::new(cpi_program, cpi_accounts)
+    }
+}
+
+impl<'a, 'b, 'c, 'info> From<&mut ProxyMintTo<'info>>
+    for CpiContext<'a, 'b, 'c, 'info, MintTo<'info>>
+{
+    fn from(accounts: &mut ProxyMintTo<'info>) -> CpiContext<'a, 'b, 'c, 'info, MintTo<'info>> {
+        let cpi_accounts = MintTo {
+            mint: accounts.mint.to_account_info(),
+            to: accounts.to.to_account_info(),
+            authority: accounts.authority.to_account_info(),
+        };
+        let cpi_program = accounts.token_program.to_account_info();
+        CpiContext::new(cpi_program, cpi_accounts)
     }
 }
 

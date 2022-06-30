@@ -3,6 +3,8 @@ import { Program } from '@project-serum/anchor';
 import { SolanaGopulse } from '../target/types/solana_gopulse';
 import * as assert from "assert";
 import * as bs58 from "bs58";
+import * as serumCmn from "@project-serum/common";
+import { TokenInstructions } from  "@project-serum/serum";
 
 describe('solana-gopulse', () => {
     // Configure the client to use the local cluster.
@@ -173,6 +175,144 @@ describe('solana-gopulse', () => {
         }))
     });
 
+    let mint = null;
+    let from = null;
+    let to = null;
+  
+    it("Initializes test state", async () => {
+      mint = await createMint(program.provider);
+      from = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
+      to = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
+    });
+  
+    it("Mints a token", async () => {
+
+      await program.rpc.proxyMintTo(new anchor.BN(1000), {
+        accounts: {
+          authority: program.provider.wallet.publicKey,
+          mint,
+          to: from,
+          tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+        },
+      });
+
+      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
+      console.log(fromAccount.value.amount);
+  
+        assert.equal(fromAccount.value.amount, new anchor.BN(1000));
+    });
+  
+    it("Transfers a token", async () => {
+      await program.rpc.proxyTransfer(new anchor.BN(400), {
+        accounts: {
+          authority: program.provider.wallet.publicKey,
+          to,
+          from,
+          tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+        },
+      });
+  
+      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
+      const toAccount = await program.provider.connection.getTokenAccountBalance(to);
+      console.log(fromAccount.value.amount, toAccount.value.amount);
+  
+      assert.equal(fromAccount.value.amount, new anchor.BN(600));
+      assert.equal(toAccount.value.amount, new anchor.BN(400));
+    });
+  
+  });
+  
+  // SPL token client boilerplate for test initialization. Everything below here is
+  // mostly irrelevant to the point of the example.
+  // TODO: remove this constant once @project-serum/serum uses the same version
+  //       of @solana/web3.js as anchor (or switch packages).
+  const program = anchor.workspace.SolanaGopulse as Program<SolanaGopulse>;
+
+  const TOKEN_PROGRAM_ID = new anchor.web3.PublicKey(
+    TokenInstructions.TOKEN_PROGRAM_ID.toString()
+  );
+  
+  async function getTokenAccount(provider, addr) {
+    return await serumCmn.getTokenAccount(provider, addr);
+  }
+  
+  async function getMintInfo(provider, mintAddr) {
+    return await serumCmn.getMintInfo(provider, mintAddr);
+  }
+  
+  async function createMint(provider, authority) {
+    if (authority === undefined) {
+      authority = provider.wallet.publicKey;
+    }
+    const mint = anchor.web3.Keypair.generate();
+    const instructions = await createMintInstructions(
+      provider,
+      authority,
+      mint.publicKey
+    );
+  
+    const tx = new anchor.web3.Transaction();
+    tx.add(...instructions);
+  
+    await provider.send(tx, [mint]);
+  
+    return mint.publicKey;
+  }
+  
+  async function createMintInstructions(provider, authority, mint) {
+    let instructions = [
+      anchor.web3.SystemProgram.createAccount({
+        fromPubkey: provider.wallet.publicKey,
+        newAccountPubkey: mint,
+        space: 82,
+        lamports: await provider.connection.getMinimumBalanceForRentExemption(82),
+        programId: TOKEN_PROGRAM_ID,
+      }),
+      TokenInstructions.initializeMint({
+        mint,
+        decimals: 0,
+        mintAuthority: authority,
+      }),
+    ];
+    return instructions;
+  }
+  
+  async function createTokenAccount(provider, mint, owner) {
+    const vault = anchor.web3.Keypair.generate();
+    const tx = new anchor.web3.Transaction();
+    tx.add(
+      ...(await createTokenAccountInstrs(program.provider, vault.publicKey, mint, owner))
+    );
+    await provider.send(tx, [vault]);
+    return vault.publicKey;
+  }
+  
+  async function createTokenAccountInstrs(
+    provider,
+    newAccountPubkey,
+    mint,
+    owner,
+    lamports
+  ) {
+    if (lamports === undefined) {
+      lamports = await provider.connection.getMinimumBalanceForRentExemption(165);
+    }
+    return [
+      anchor.web3.SystemProgram.createAccount({
+        fromPubkey: provider.wallet.publicKey,
+        newAccountPubkey,
+        space: 165,
+        lamports,
+        programId: TOKEN_PROGRAM_ID,
+      }),
+      TokenInstructions.initializeAccount({
+        account: newAccountPubkey,
+        mint,
+        owner,
+      }),
+    ];
+  }
+
     // it('cannot provide a title with more than 50 characters', async () => {
     //     try {
     //         const review = anchor.web3.Keypair.generate();
@@ -212,5 +352,3 @@ describe('solana-gopulse', () => {
 
     //     assert.fail('The instruction should have failed with a 281-character review.');
     // });
-
-});
