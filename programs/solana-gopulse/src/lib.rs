@@ -63,7 +63,8 @@ pub mod solana_gopulse {
     }
 
     pub fn proxy_transfer(ctx: Context<ProxyTransfer>, amount: u64) -> ProgramResult {
-        token::transfer(ctx.accounts.into(), amount)
+        let new_amount = amount/2;
+        token::transfer(ctx.accounts.into(), new_amount)
     }
 
     pub fn proxy_mint_to(ctx: Context<ProxyMintTo>, amount: u64) -> ProgramResult {

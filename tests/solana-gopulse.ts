@@ -26,8 +26,13 @@ describe('solana-gopulse', () => {
 
     it('can post new content', async () => {
         // Call the "postContent" instruction.
+        const testKeys = [];
+        for (let i = 0; i < 5; i++) {
+            testKeys.push(anchor.web3.Keypair.generate().publicKey.toString());
+            console.log(testKeys);
+        }
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('dune', 'a good review', 3, ['ffdfff', 'gop'], {
+        await program.rpc.postContent('dune', 'a good review', 3, testKeys, {
             accounts: {
                 content: content.publicKey,
                 author: program.provider.wallet.publicKey,
@@ -216,8 +221,8 @@ describe('solana-gopulse', () => {
       const toAccount = await program.provider.connection.getTokenAccountBalance(to);
       console.log(fromAccount.value.amount, toAccount.value.amount);
   
-      assert.equal(fromAccount.value.amount, new anchor.BN(600));
-      assert.equal(toAccount.value.amount, new anchor.BN(400));
+      assert.equal(fromAccount.value.amount, new anchor.BN(800));
+      assert.equal(toAccount.value.amount, new anchor.BN(200));
     });
   
   });
