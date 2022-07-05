@@ -64,9 +64,15 @@ describe('solana-gopulse', () => {
         const signature = await program.provider.connection.requestAirdrop(otherUser.publicKey, 1000000000);
         await program.provider.connection.confirmTransaction(signature);
 
+        const testKeys = [];
+        for (let i = 0; i < 5; i++) {
+            testKeys.push(anchor.web3.Keypair.generate().publicKey.toString());
+            console.log(testKeys);
+        }
+
         // Call the "SendTweet" instruction on behalf of this other user.
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('taxi-driver', 'Yay taxis', 2, ['ffdfff'], {
+        await program.rpc.postContent('taxi-driver', 'Yay taxis', 2, testKeys, {
             accounts: {
                 content: content.publicKey,
                 author: otherUser.publicKey,
