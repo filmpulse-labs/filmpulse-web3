@@ -10,12 +10,15 @@ describe('solana-gopulse', () => {
     // Configure the client to use the local cluster.
     anchor.setProvider(anchor.Provider.env());
     const program = anchor.workspace.SolanaGopulse as Program<SolanaGopulse>;
-    const postContent = async (author, primaryTag, primaryContent, tag0, authorKeys) => {
+    const postContent = async (author, primaryTag, primaryContent, amount) => {
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent(primaryTag, primaryContent, tag0, authorKeys, {
+        await program.rpc.postContent(primaryTag, primaryContent, amount, {
             accounts: {
                 content: content.publicKey,
                 author,
+                to,
+                from,
+                tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
             signers: [content],
@@ -24,18 +27,60 @@ describe('solana-gopulse', () => {
         return content
     }
 
+    let mint = null;
+    let from = null;
+    let from2 = null;
+    let to = null;
+  
+    it("Initializes test state", async () => {
+      mint = await createMint(program.provider);
+      from = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
+      to = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
+    });
+  
+    it("Mints a token", async () => {
+      await program.rpc.proxyMintTo(new anchor.BN(1000), {
+        accounts: {
+          authority: program.provider.wallet.publicKey,
+          mint,
+          to: from,
+          tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+        },
+      });
+      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
+      assert.equal(fromAccount.value.amount, new anchor.BN(1000));
+    });
+  
+    // it("Transfers a token", async () => {
+    //   await program.rpc.proxyTransfer(new anchor.BN(400), {
+    //     accounts: {
+    //       authority: program.provider.wallet.publicKey,
+        //   to,
+        //   from,
+        //   tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+    //     },
+    //   });
+  
+    //   const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
+    //   const toAccount = await program.provider.connection.getTokenAccountBalance(to);
+    //   console.log(fromAccount.value.amount, toAccount.value.amount);
+  
+    //   assert.equal(fromAccount.value.amount, new anchor.BN(800));
+    //   assert.equal(toAccount.value.amount, new anchor.BN(200));
+    // });
+  
+//   });
+
     it('can post new content', async () => {
         // Call the "postContent" instruction.
-        const testKeys = [];
-        for (let i = 0; i < 5; i++) {
-            testKeys.push(anchor.web3.Keypair.generate().publicKey.toString());
-            console.log(testKeys);
-        }
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('dune', 'a good review', 3, testKeys, {
+        await program.rpc.postContent('dune', 'a good review', new anchor.BN(100), {
             accounts: {
                 content: content.publicKey,
                 author: program.provider.wallet.publicKey,
+                to,
+                from,
+                tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
             signers: [content],
@@ -43,80 +88,88 @@ describe('solana-gopulse', () => {
 
         // Fetch the account details of the created content.
         const contentAccount = await program.account.content.fetch(content.publicKey);
-        console.log("New Content Account: " + contentAccount.author.toString());
+        // console.log("New Content Account: " + contentAccount.author.toString());
 
         const contentAccounts = await program.account.content.all();
         for (let content of contentAccounts) {
-            console.log("All Content Accounts: " + content.account.author.toString());
+            // console.log("All Content Accounts: " + content.account.author.toString());
         }
+
+      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
+      const toAccount = await program.provider.connection.getTokenAccountBalance(to);
 
         // Ensure it has the right data.
         assert.equal(contentAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
         assert.equal(contentAccount.title, 'dune');
         assert.equal(contentAccount.essay, 'a good review');
-        assert.equal(contentAccount.rating, 3);
+        assert.equal(fromAccount.value.amount, new anchor.BN(900));
+        assert.equal(toAccount.value.amount, new anchor.BN(100));
         assert.ok(contentAccount.timestamp);
     });
 
-    it('can post a new review from a different author', async () => {
-        // Generate another user and airdrop them some SOL.
-        const otherUser = anchor.web3.Keypair.generate();
-        const signature = await program.provider.connection.requestAirdrop(otherUser.publicKey, 1000000000);
-        await program.provider.connection.confirmTransaction(signature);
+    // it('can post a new review from a different author', async () => {
+    //     // Generate another user and airdrop them some SOL.
+    //     const otherUser = anchor.web3.Keypair.generate();
+    //     const signature = await program.provider.connection.requestAirdrop(otherUser.publicKey, 1000000000);
+    //     await program.provider.connection.confirmTransaction(signature);
 
-        const testKeys = [];
-        for (let i = 0; i < 5; i++) {
-            testKeys.push(anchor.web3.Keypair.generate().publicKey.toString());
-            console.log(testKeys);
-        }
+    //     from2 = await createTokenAccount(program.provider, mint, otherUser.publicKey);
+    //     console.log("Other User: " + otherUser.publicKey)
+    //     console.log("from2: " + from2);
+    //     console.log("to: " + to);
 
-        // Call the "SendTweet" instruction on behalf of this other user.
-        const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('taxi-driver', 'Yay taxis', 2, testKeys, {
-            accounts: {
-                content: content.publicKey,
-                author: otherUser.publicKey,
-                systemProgram: anchor.web3.SystemProgram.programId,
-            },
-            signers: [otherUser, content],
-        });
+    //     await program.rpc.proxyMintTo(new anchor.BN(1000), {
+    //         accounts: {
+    //           authority: program.provider.wallet.publicKey,
+    //           mint,
+    //           to: from2,
+    //           tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+    //         },
+    //       });
+    
+    //       const fromAccount = await program.provider.connection.getTokenAccountBalance(from2);
+    //       console.log("Minted Amount: " + fromAccount.value.amount);
 
-        // Fetch the account details of the created tweet.
-        const reviewAccount = await program.account.content.fetch(content.publicKey);
+    //     // Call the "postContent" instruction on behalf of this other user.
+    //     const content = anchor.web3.Keypair.generate();
+    //     await program.rpc.postContent('taxi-driver', 'Yay taxis', new anchor.BN(100), {
+    //         accounts: {
+    //             content: content.publicKey,
+    //             author: otherUser.publicKey,
+    //             from2,
+    //             to,
+    //             tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+    //             systemProgram: anchor.web3.SystemProgram.programId,
+    //         },
+    //         signers: [content],
+    //     });
 
-        const reviewAccounts = await program.account.content.all();
-        for (let review of reviewAccounts) {
-            console.log("All Review Accounts: " + review.account.author.toString());
-        }
+    //     // Fetch the account details of the created tweet.
+    //     const reviewAccount = await program.account.content.fetch(content.publicKey);
 
-        // Ensure it has the right data.
-        assert.equal(reviewAccount.author.toBase58(), otherUser.publicKey.toBase58());
-        assert.equal(reviewAccount.title, 'taxi-driver');
-        assert.equal(reviewAccount.essay, 'Yay taxis');
-        assert.equal(reviewAccount.rating, 2);
-        assert.ok(reviewAccount.timestamp);
-    });
+    //     const reviewAccounts = await program.account.content.all();
+    //     for (let review of reviewAccounts) {
+    //         console.log("All Review Accounts: " + review.account.author.toString());
+    //     }
 
-    it('can fetch all reviews', async () => {
-        const reviewAccounts = await program.account.content.all();
-        assert.equal(reviewAccounts.length, 2);
-    });
+    //     // Ensure it has the right data.
+    //     assert.equal(reviewAccount.author.toBase58(), otherUser.publicKey.toBase58());
+    //     assert.equal(reviewAccount.title, 'taxi-driver');
+    //     assert.equal(reviewAccount.essay, 'Yay taxis');
+    //     assert.ok(reviewAccount.timestamp);
+    // });
 
     it('can send another new review', async () => {
         const reviewAccounts = await program.account.content.all();
-        let keysToPass = [];
-        for (let reviewAccount of reviewAccounts) {
-            let authorAddress = reviewAccount.account.author.toString()
-            console.log("All Review Accounts: " + authorAddress);
-            keysToPass.push(authorAddress);
-        }
-        console.log(keysToPass);
         // Call the "postReview" instruction.
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('dune', 'another good review', 3, keysToPass, {
+        await program.rpc.postContent('dune', 'another good review', new anchor.BN(100), {
             accounts: {
                 content: content.publicKey,
                 author: program.provider.wallet.publicKey,
+                to,
+                from,
+                tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
             signers: [content],
@@ -129,8 +182,12 @@ describe('solana-gopulse', () => {
         assert.equal(reviewAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
         assert.equal(reviewAccount.title, 'dune');
         assert.equal(reviewAccount.essay, 'another good review');
-        assert.equal(reviewAccount.rating, 3);
         assert.ok(reviewAccount.timestamp);
+    });
+
+    it('can fetch all reviews', async () => {
+        const reviewAccounts = await program.account.content.all();
+        assert.equal(reviewAccounts.length, 2);
     });
 
     it('can verify a review', async () => {
@@ -185,53 +242,7 @@ describe('solana-gopulse', () => {
             return reviewAccount.account.title === 'dune'
         }))
     });
-
-    let mint = null;
-    let from = null;
-    let to = null;
-  
-    it("Initializes test state", async () => {
-      mint = await createMint(program.provider);
-      from = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
-      to = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
-    });
-  
-    it("Mints a token", async () => {
-
-      await program.rpc.proxyMintTo(new anchor.BN(1000), {
-        accounts: {
-          authority: program.provider.wallet.publicKey,
-          mint,
-          to: from,
-          tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
-        },
-      });
-
-      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
-      console.log(fromAccount.value.amount);
-  
-        assert.equal(fromAccount.value.amount, new anchor.BN(1000));
-    });
-  
-    it("Transfers a token", async () => {
-      await program.rpc.proxyTransfer(new anchor.BN(400), {
-        accounts: {
-          authority: program.provider.wallet.publicKey,
-          to,
-          from,
-          tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
-        },
-      });
-  
-      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
-      const toAccount = await program.provider.connection.getTokenAccountBalance(to);
-      console.log(fromAccount.value.amount, toAccount.value.amount);
-  
-      assert.equal(fromAccount.value.amount, new anchor.BN(800));
-      assert.equal(toAccount.value.amount, new anchor.BN(200));
-    });
-  
-  });
+});
   
   // SPL token client boilerplate for test initialization. Everything below here is
   // mostly irrelevant to the point of the example.

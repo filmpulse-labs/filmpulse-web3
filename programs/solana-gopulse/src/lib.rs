@@ -6,7 +6,7 @@ declare_id!("2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43");
 #[program]
 pub mod solana_gopulse {
     use super::*;
-    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, rating: i32, _author_keys: Vec<String>) -> ProgramResult {
+    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, amount: u64) -> ProgramResult {
         let content: &mut Account<Content> = &mut ctx.accounts.content;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
@@ -27,7 +27,8 @@ pub mod solana_gopulse {
         content.timestamp = clock.unix_timestamp;
         content.title = title;
         content.essay = essay;
-        content.rating = rating;
+
+        token::transfer(ctx.accounts.into(), amount);
 
         // let authors: usize = author_keys.len();
         // let tokenDistribution: usize = 1/authors;
@@ -62,10 +63,10 @@ pub mod solana_gopulse {
         Ok(())
     }
 
-    pub fn proxy_transfer(ctx: Context<ProxyTransfer>, amount: u64) -> ProgramResult {
-        let new_amount = amount/2;
-        token::transfer(ctx.accounts.into(), new_amount)
-    }
+    // pub fn proxy_transfer(ctx: Context<ProxyTransfer>, amount: u64) -> ProgramResult {
+    //     let new_amount = amount/2;
+    //     token::transfer(ctx.accounts.into(), new_amount)
+    // }
 
     pub fn proxy_mint_to(ctx: Context<ProxyMintTo>, amount: u64) -> ProgramResult {
         token::mint_to(ctx.accounts.into(), amount)
@@ -78,6 +79,11 @@ pub struct PostContent<'info> {
     pub content: Account<'info, Content>,
     #[account(mut)]
     pub author: Signer<'info>,
+    #[account(mut)]
+    pub from: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub to: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
 
@@ -90,15 +96,15 @@ pub struct VerifyReview<'info> {
     pub system_program: Program<'info, System>,
 }
 
-#[derive(Accounts)]
-pub struct ProxyTransfer<'info> {
-    pub authority: Signer<'info>,
-    #[account(mut)]
-    pub from: Account<'info, TokenAccount>,
-    #[account(mut)]
-    pub to: Account<'info, TokenAccount>,
-    pub token_program: Program<'info, Token>,
-}
+// #[derive(Accounts)]
+// pub struct ProxyTransfer<'info> {
+//     pub authority: Signer<'info>,
+//     #[account(mut)]
+//     pub from: Account<'info, TokenAccount>,
+//     #[account(mut)]
+//     pub to: Account<'info, TokenAccount>,
+//     pub token_program: Program<'info, Token>,
+// }
 
 #[derive(Accounts)]
 pub struct ProxyMintTo<'info> {
@@ -116,7 +122,6 @@ pub struct Content {
     pub timestamp: i64,
     pub title: String,
     pub essay: String,
-    pub rating: i32,
 }
 
 #[account]
@@ -150,14 +155,14 @@ impl Verify {
         + PUBLIC_KEY_LENGTH; // Verifier.
 }
 
-impl<'a, 'b, 'c, 'info> From<&mut ProxyTransfer<'info>>
+impl<'a, 'b, 'c, 'info> From<&mut PostContent<'info>>
     for CpiContext<'a, 'b, 'c, 'info, Transfer<'info>>
 {
-    fn from(accounts: &mut ProxyTransfer<'info>) -> CpiContext<'a, 'b, 'c, 'info, Transfer<'info>> {
+    fn from(accounts: &mut PostContent<'info>) -> CpiContext<'a, 'b, 'c, 'info, Transfer<'info>> {
         let cpi_accounts = Transfer {
             from: accounts.from.to_account_info(),
             to: accounts.to.to_account_info(),
-            authority: accounts.authority.to_account_info(),
+            authority: accounts.author.to_account_info(),
         };
         let cpi_program = accounts.token_program.to_account_info();
         CpiContext::new(cpi_program, cpi_accounts)
