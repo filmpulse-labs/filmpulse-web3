@@ -12,7 +12,7 @@ describe('solana-gopulse', () => {
     const program = anchor.workspace.SolanaGopulse as Program<SolanaGopulse>;
     const postContent = async (author, primaryTag, primaryContent, amount) => {
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent(primaryTag, primaryContent, amount, {
+        await program.rpc.postV0(primaryTag, primaryContent, amount, {
             accounts: {
                 content: content.publicKey,
                 author,
@@ -23,7 +23,6 @@ describe('solana-gopulse', () => {
             },
             signers: [content],
         });
-
         return content
     }
 
@@ -32,14 +31,14 @@ describe('solana-gopulse', () => {
     let from2 = null;
     let to = null;
   
-    it("Initializes test state", async () => {
+    it("Initialize test state", async () => {
       mint = await createMint(program.provider);
       from = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
       to = await createTokenAccount(program.provider, mint, program.provider.wallet.publicKey);
     });
   
-    it("Mints a token", async () => {
-      await program.rpc.proxyMintTo(new anchor.BN(1000), {
+    it("Mint tokens", async () => {
+      await program.rpc.proxyMintTo(new anchor.BN(10000), {
         accounts: {
           authority: program.provider.wallet.publicKey,
           mint,
@@ -48,51 +47,33 @@ describe('solana-gopulse', () => {
         },
       });
       const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
-      assert.equal(fromAccount.value.amount, new anchor.BN(1000));
+      assert.equal(fromAccount.value.amount, new anchor.BN(10000));
     });
-  
-    // it("Transfers a token", async () => {
-    //   await program.rpc.proxyTransfer(new anchor.BN(400), {
-    //     accounts: {
-    //       authority: program.provider.wallet.publicKey,
-        //   to,
-        //   from,
-        //   tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
-    //     },
-    //   });
-  
-    //   const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
-    //   const toAccount = await program.provider.connection.getTokenAccountBalance(to);
-    //   console.log(fromAccount.value.amount, toAccount.value.amount);
-  
-    //   assert.equal(fromAccount.value.amount, new anchor.BN(800));
-    //   assert.equal(toAccount.value.amount, new anchor.BN(200));
-    // });
-  
-//   });
 
-    it('can post new content', async () => {
-        // Call the "postContent" instruction.
-        const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('dune', 'a good review', new anchor.BN(100), {
-            accounts: {
-                content: content.publicKey,
-                author: program.provider.wallet.publicKey,
-                to,
-                from,
-                tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
-                systemProgram: anchor.web3.SystemProgram.programId,
-            },
-            signers: [content],
-        });
+    it('Post new content', async () => {
+        let content;
+        for (let index = 0; index < 10; index++) {
+            content = anchor.web3.Keypair.generate();
+            await program.rpc.postV0('dune', 'a good review', new anchor.BN(100), {
+                accounts: {
+                    content: content.publicKey,
+                    author: program.provider.wallet.publicKey,
+                    to,
+                    from,
+                    tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+                    systemProgram: anchor.web3.SystemProgram.programId,
+                },
+                signers: [content],
+            });
+        }
 
         // Fetch the account details of the created content.
         const contentAccount = await program.account.content.fetch(content.publicKey);
-        // console.log("New Content Account: " + contentAccount.author.toString());
+        console.log("New Content Account: " + contentAccount.essay);
 
         const contentAccounts = await program.account.content.all();
         for (let content of contentAccounts) {
-            // console.log("All Content Accounts: " + content.account.author.toString());
+            console.log("All Content Accounts: " + content.publicKey.toString());
         }
 
       const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
@@ -102,68 +83,57 @@ describe('solana-gopulse', () => {
         assert.equal(contentAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
         assert.equal(contentAccount.title, 'dune');
         assert.equal(contentAccount.essay, 'a good review');
-        assert.equal(fromAccount.value.amount, new anchor.BN(900));
-        assert.equal(toAccount.value.amount, new anchor.BN(100));
+        assert.equal(fromAccount.value.amount, new anchor.BN(9000));
+        assert.equal(toAccount.value.amount, new anchor.BN(1000));
         assert.ok(contentAccount.timestamp);
     });
 
-    // it('can post a new review from a different author', async () => {
-    //     // Generate another user and airdrop them some SOL.
-    //     const otherUser = anchor.web3.Keypair.generate();
-    //     const signature = await program.provider.connection.requestAirdrop(otherUser.publicKey, 1000000000);
-    //     await program.provider.connection.confirmTransaction(signature);
+    it('Post content from a different author', async () => {
+        const otherUser = anchor.web3.Keypair.generate();
+        const signature = await program.provider.connection.requestAirdrop(otherUser.publicKey, 1000000000);
+        await program.provider.connection.confirmTransaction(signature);
 
-    //     from2 = await createTokenAccount(program.provider, mint, otherUser.publicKey);
-    //     console.log("Other User: " + otherUser.publicKey)
-    //     console.log("from2: " + from2);
-    //     console.log("to: " + to);
+        from2 = await createTokenAccount(program.provider, mint, otherUser.publicKey);
 
-    //     await program.rpc.proxyMintTo(new anchor.BN(1000), {
-    //         accounts: {
-    //           authority: program.provider.wallet.publicKey,
-    //           mint,
-    //           to: from2,
-    //           tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
-    //         },
-    //       });
+        await program.rpc.proxyMintTo(new anchor.BN(1000), {
+            accounts: {
+              authority: program.provider.wallet.publicKey,
+              mint,
+              to: from2,
+              tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+            },
+          });
     
-    //       const fromAccount = await program.provider.connection.getTokenAccountBalance(from2);
-    //       console.log("Minted Amount: " + fromAccount.value.amount);
+          const fromAccount = await program.provider.connection.getTokenAccountBalance(from2);
 
-    //     // Call the "postContent" instruction on behalf of this other user.
-    //     const content = anchor.web3.Keypair.generate();
-    //     await program.rpc.postContent('taxi-driver', 'Yay taxis', new anchor.BN(100), {
-    //         accounts: {
-    //             content: content.publicKey,
-    //             author: otherUser.publicKey,
-    //             from2,
-    //             to,
-    //             tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
-    //             systemProgram: anchor.web3.SystemProgram.programId,
-    //         },
-    //         signers: [content],
-    //     });
-
-    //     // Fetch the account details of the created tweet.
-    //     const reviewAccount = await program.account.content.fetch(content.publicKey);
-
-    //     const reviewAccounts = await program.account.content.all();
-    //     for (let review of reviewAccounts) {
-    //         console.log("All Review Accounts: " + review.account.author.toString());
-    //     }
-
-    //     // Ensure it has the right data.
-    //     assert.equal(reviewAccount.author.toBase58(), otherUser.publicKey.toBase58());
-    //     assert.equal(reviewAccount.title, 'taxi-driver');
-    //     assert.equal(reviewAccount.essay, 'Yay taxis');
-    //     assert.ok(reviewAccount.timestamp);
-    // });
-
-    it('can send another new review', async () => {
-        const reviewAccounts = await program.account.content.all();
-        // Call the "postReview" instruction.
         const content = anchor.web3.Keypair.generate();
-        await program.rpc.postContent('dune', 'another good review', new anchor.BN(100), {
+        await program.rpc.postV0('taxi-driver', 'Yay taxis', new anchor.BN(100), {
+            accounts: {
+                content: content.publicKey,
+                author: otherUser.publicKey,
+                from: from2,
+                to,
+                tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
+                systemProgram: anchor.web3.SystemProgram.programId,
+            },
+            signers: [otherUser, content],
+        });
+
+        const contentAccount = await program.account.content.fetch(content.publicKey);
+
+        const contentAccounts = await program.account.content.all();
+
+        // Ensure it has the right data.
+        assert.equal(contentAccount.author.toBase58(), otherUser.publicKey.toBase58());
+        assert.equal(contentAccount.title, 'taxi-driver');
+        assert.equal(contentAccount.essay, 'Yay taxis');
+        assert.ok(contentAccount.timestamp);
+    });
+
+    it('Post content again', async () => {
+        const contentAccounts = await program.account.content.all();
+        const content = anchor.web3.Keypair.generate();
+        await program.rpc.postV0('dune', 'another good review', new anchor.BN(100), {
             accounts: {
                 content: content.publicKey,
                 author: program.provider.wallet.publicKey,
@@ -176,38 +146,38 @@ describe('solana-gopulse', () => {
         });
 
         // Fetch the account details of the created tweet.
-        const reviewAccount = await program.account.content.fetch(content.publicKey);
+        const contentAccount = await program.account.content.fetch(content.publicKey);
 
         // Ensure it has the right data.
-        assert.equal(reviewAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
-        assert.equal(reviewAccount.title, 'dune');
-        assert.equal(reviewAccount.essay, 'another good review');
-        assert.ok(reviewAccount.timestamp);
+        assert.equal(contentAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
+        assert.equal(contentAccount.title, 'dune');
+        assert.equal(contentAccount.essay, 'another good review');
+        assert.ok(contentAccount.timestamp);
     });
 
-    it('can fetch all reviews', async () => {
+    it('Fetch all content accounts', async () => {
         const reviewAccounts = await program.account.content.all();
-        assert.equal(reviewAccounts.length, 2);
+        assert.equal(reviewAccounts.length, 12);
     });
 
-    it('can verify a review', async () => {
-        const reviewAccounts = await program.account.content.all();
-        let theKey = reviewAccounts[0].publicKey;
+    it('Validate content', async () => {
+        const contentAccounts = await program.account.content.all();
+        let theKey = contentAccounts[0].publicKey;
         const verify = anchor.web3.Keypair.generate();
-        await program.rpc.verifyReview(theKey, {
+        await program.rpc.validateV0({
             accounts: {
                 verify: verify.publicKey,
                 author: program.provider.wallet.publicKey,
+                key: theKey,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
             signers: [verify],
         });
 
-        // Fetch the account details of the created tweet.
-        const verifyAccount = await program.account.verify.fetch(verify.publicKey);
+        const validateAccount = await program.account.verify.fetch(verify.publicKey);
     });
 
-    it('can filter reviews by author', async () => {
+    it('Filter content accounts by author', async () => {
         const authorPublicKey = program.provider.wallet.publicKey
         const reviewAccounts = await program.account.content.all([
             {
@@ -218,13 +188,13 @@ describe('solana-gopulse', () => {
             }
         ]);
 
-        assert.equal(reviewAccounts.length, 2);
+        assert.equal(reviewAccounts.length, 11);
         assert.ok(reviewAccounts.every(reviewAccount => {
             return reviewAccount.account.author.toBase58() === authorPublicKey.toBase58()
         }))
     });
 
-    it('can filter reviews by topic', async () => {
+    it('Filter content accounts by topic', async () => {
         const reviewAccounts = await program.account.content.all([
             {
                 memcmp: {
@@ -237,7 +207,7 @@ describe('solana-gopulse', () => {
             }
         ]);
 
-        assert.equal(reviewAccounts.length, 2);
+        assert.equal(reviewAccounts.length, 11);
         assert.ok(reviewAccounts.every(reviewAccount => {
             return reviewAccount.account.title === 'dune'
         }))
@@ -292,7 +262,7 @@ describe('solana-gopulse', () => {
       }),
       TokenInstructions.initializeMint({
         mint,
-        decimals: 0,
+        decimals: 9,
         mintAuthority: authority,
       }),
     ];

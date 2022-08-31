@@ -6,7 +6,7 @@ declare_id!("2M21vpK9jmHJvMs7jNZ6qeW9eQs34d4weDzzrMywDc43");
 #[program]
 pub mod solana_gopulse {
     use super::*;
-    pub fn post_content(ctx: Context<PostContent>, title: String, essay: String, amount: u64) -> ProgramResult {
+    pub fn post_v0(ctx: Context<PostContent>, title: String, essay: String, amount: u64) -> ProgramResult {
         let content: &mut Account<Content> = &mut ctx.accounts.content;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
@@ -27,6 +27,7 @@ pub mod solana_gopulse {
         content.timestamp = clock.unix_timestamp;
         content.title = title;
         content.essay = essay;
+        content.amount = amount;
 
         token::transfer(ctx.accounts.into(), amount);
 
@@ -40,14 +41,13 @@ pub mod solana_gopulse {
         Ok(())
     }
 
-    pub fn verify_review(ctx: Context<VerifyReview>, review_key: Pubkey) -> ProgramResult {
+    pub fn validate_v0(ctx: Context<VerifyReview>) -> ProgramResult {
         let verify: &mut Account<Verify> = &mut ctx.accounts.verify;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
 
         verify.author = *author.key;
         verify.timestamp = clock.unix_timestamp;
-        verify.review_key = review_key;
 
         // let totalSupply: u64 = 100000000;
         // let currentSupply: u64 = 21000420;
@@ -62,11 +62,6 @@ pub mod solana_gopulse {
 
         Ok(())
     }
-
-    // pub fn proxy_transfer(ctx: Context<ProxyTransfer>, amount: u64) -> ProgramResult {
-    //     let new_amount = amount/2;
-    //     token::transfer(ctx.accounts.into(), new_amount)
-    // }
 
     pub fn proxy_mint_to(ctx: Context<ProxyMintTo>, amount: u64) -> ProgramResult {
         token::mint_to(ctx.accounts.into(), amount)
@@ -92,19 +87,10 @@ pub struct VerifyReview<'info> {
     #[account(init, payer = author, space = Verify::LEN)]
     pub verify: Account<'info, Verify>,
     #[account(mut)]
-    pub author: Signer<'info>,
+    pub author: Signer<'info>, 
+    pub key: Account<'info, Content>,
     pub system_program: Program<'info, System>,
 }
-
-// #[derive(Accounts)]
-// pub struct ProxyTransfer<'info> {
-//     pub authority: Signer<'info>,
-//     #[account(mut)]
-//     pub from: Account<'info, TokenAccount>,
-//     #[account(mut)]
-//     pub to: Account<'info, TokenAccount>,
-//     pub token_program: Program<'info, Token>,
-// }
 
 #[derive(Accounts)]
 pub struct ProxyMintTo<'info> {
@@ -122,13 +108,13 @@ pub struct Content {
     pub timestamp: i64,
     pub title: String,
     pub essay: String,
+    pub amount: u64,
 }
 
 #[account]
 pub struct Verify {
     pub author: Pubkey,
     pub timestamp: i64,
-    pub review_key: Pubkey,
 }
 
 const DISCRIMINATOR_LENGTH: usize = 8;
