@@ -10,7 +10,7 @@ describe('solana-gopulse', () => {
     // Configure the client to use the local cluster.
     anchor.setProvider(anchor.Provider.env());
     const program = anchor.workspace.SolanaGopulse as Program<SolanaGopulse>;
-    const postContent = async (author, primaryTag, primaryContent, amount) => {
+    const postContent = async (author, primaryTag, primaryContent, amount, theKeys) => {
         const content = anchor.web3.Keypair.generate();
         await program.rpc.postV0(primaryTag, primaryContent, amount, {
             accounts: {
@@ -21,6 +21,7 @@ describe('solana-gopulse', () => {
                 tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
+            remainingAccounts: theKeys,
             signers: [content],
         });
         return content
@@ -52,6 +53,7 @@ describe('solana-gopulse', () => {
 
     it('Post new content', async () => {
         let content;
+        let contentAccounts = await program.account.content.all();
         for (let index = 0; index < 10; index++) {
             content = anchor.web3.Keypair.generate();
             await program.rpc.postV0('dune', 'a good review', new anchor.BN(100), {
@@ -63,21 +65,18 @@ describe('solana-gopulse', () => {
                     tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
                     systemProgram: anchor.web3.SystemProgram.programId,
                 },
+                remainingAccounts: contentAccounts,
                 signers: [content],
             });
         }
 
         // Fetch the account details of the created content.
         const contentAccount = await program.account.content.fetch(content.publicKey);
-        console.log("New Content Account: " + contentAccount.essay);
 
-        const contentAccounts = await program.account.content.all();
-        for (let content of contentAccounts) {
-            console.log("All Content Accounts: " + content.publicKey.toString());
-        }
+        contentAccounts = await program.account.content.all();
 
-      const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
-      const toAccount = await program.provider.connection.getTokenAccountBalance(to);
+        const fromAccount = await program.provider.connection.getTokenAccountBalance(from);
+        const toAccount = await program.provider.connection.getTokenAccountBalance(to);
 
         // Ensure it has the right data.
         assert.equal(contentAccount.author.toBase58(), program.provider.wallet.publicKey.toBase58());
@@ -102,9 +101,7 @@ describe('solana-gopulse', () => {
               to: from2,
               tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
             },
-          });
-    
-          const fromAccount = await program.provider.connection.getTokenAccountBalance(from2);
+        });
 
         const content = anchor.web3.Keypair.generate();
         await program.rpc.postV0('taxi-driver', 'Yay taxis', new anchor.BN(100), {
@@ -120,8 +117,6 @@ describe('solana-gopulse', () => {
         });
 
         const contentAccount = await program.account.content.fetch(content.publicKey);
-
-        const contentAccounts = await program.account.content.all();
 
         // Ensure it has the right data.
         assert.equal(contentAccount.author.toBase58(), otherUser.publicKey.toBase58());
@@ -164,11 +159,14 @@ describe('solana-gopulse', () => {
         const contentAccounts = await program.account.content.all();
         let theKey = contentAccounts[0].publicKey;
         const verify = anchor.web3.Keypair.generate();
-        await program.rpc.validateV0({
+        await program.rpc.validateV0(new anchor.BN(100), {
             accounts: {
                 verify: verify.publicKey,
                 author: program.provider.wallet.publicKey,
                 key: theKey,
+                to,
+                from,
+                tokenProgram: TokenInstructions.TOKEN_PROGRAM_ID,
                 systemProgram: anchor.web3.SystemProgram.programId,
             },
             signers: [verify],

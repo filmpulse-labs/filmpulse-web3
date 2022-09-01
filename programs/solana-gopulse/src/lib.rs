@@ -9,6 +9,7 @@ pub mod solana_gopulse {
     pub fn post_v0(ctx: Context<PostContent>, title: String, essay: String, amount: u64) -> ProgramResult {
         let content: &mut Account<Content> = &mut ctx.accounts.content;
         let author: &Signer = &ctx.accounts.author;
+        let accounts = &ctx.remaining_accounts;
         let clock: Clock = Clock::get().unwrap();
         
         if title.chars().count() < 1 {
@@ -29,7 +30,15 @@ pub mod solana_gopulse {
         content.essay = essay;
         content.amount = amount;
 
-        token::transfer(ctx.accounts.into(), amount);
+        let cpi_accounts = Transfer {
+            from: ctx.accounts.from.to_account_info(),
+            to: ctx.accounts.to.to_account_info(),
+            authority: ctx.accounts.author.to_account_info(),
+        };
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+        token::transfer(cpi_ctx, amount)?;
 
         // let authors: usize = author_keys.len();
         // let tokenDistribution: usize = 1/authors;
@@ -41,13 +50,24 @@ pub mod solana_gopulse {
         Ok(())
     }
 
-    pub fn validate_v0(ctx: Context<VerifyReview>) -> ProgramResult {
+    pub fn validate_v0(ctx: Context<VerifyReview>, amount: u64) -> ProgramResult {
         let verify: &mut Account<Verify> = &mut ctx.accounts.verify;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get().unwrap();
 
         verify.author = *author.key;
         verify.timestamp = clock.unix_timestamp;
+        verify.amount = amount;
+
+        let cpi_accounts = Transfer {
+            from: ctx.accounts.from.to_account_info(),
+            to: ctx.accounts.to.to_account_info(),
+            authority: ctx.accounts.author.to_account_info(),
+        };
+        let cpi_program = ctx.accounts.token_program.to_account_info();
+        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+
+        token::transfer(cpi_ctx, amount)?;
 
         // let totalSupply: u64 = 100000000;
         // let currentSupply: u64 = 21000420;
@@ -89,6 +109,11 @@ pub struct VerifyReview<'info> {
     #[account(mut)]
     pub author: Signer<'info>, 
     pub key: Account<'info, Content>,
+    #[account(mut)]
+    pub from: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub to: Account<'info, TokenAccount>,
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }
 
@@ -115,6 +140,7 @@ pub struct Content {
 pub struct Verify {
     pub author: Pubkey,
     pub timestamp: i64,
+    pub amount: u64,
 }
 
 const DISCRIMINATOR_LENGTH: usize = 8;
@@ -139,20 +165,6 @@ impl Verify {
         + PUBLIC_KEY_LENGTH // TweetKey.
         + TIMESTAMP_LENGTH // Timestamp.
         + PUBLIC_KEY_LENGTH; // Verifier.
-}
-
-impl<'a, 'b, 'c, 'info> From<&mut PostContent<'info>>
-    for CpiContext<'a, 'b, 'c, 'info, Transfer<'info>>
-{
-    fn from(accounts: &mut PostContent<'info>) -> CpiContext<'a, 'b, 'c, 'info, Transfer<'info>> {
-        let cpi_accounts = Transfer {
-            from: accounts.from.to_account_info(),
-            to: accounts.to.to_account_info(),
-            authority: accounts.author.to_account_info(),
-        };
-        let cpi_program = accounts.token_program.to_account_info();
-        CpiContext::new(cpi_program, cpi_accounts)
-    }
 }
 
 impl<'a, 'b, 'c, 'info> From<&mut ProxyMintTo<'info>>
