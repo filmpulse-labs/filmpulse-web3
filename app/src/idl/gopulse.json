@@ -1,0 +1,283 @@
+{
+  "version": "0.1.0",
+  "name": "gopulse",
+  "instructions": [
+    {
+      "name": "postV0",
+      "accounts": [
+        {
+          "name": "content",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "poster",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "contentLink",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "f64"
+        },
+        {
+          "name": "validatorThreshold",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "validateV0",
+      "accounts": [
+        {
+          "name": "validate",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "validator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "content",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "poster",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "f64"
+        },
+        {
+          "name": "position",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "posterCollectV0",
+      "accounts": [
+        {
+          "name": "poster",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "content",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "validatorCollectV0",
+      "accounts": [
+        {
+          "name": "validate",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "validator",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "content",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Content",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "poster",
+            "type": "publicKey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "contentLink",
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "type": "f64"
+          },
+          {
+            "name": "totalPool",
+            "type": "f64"
+          },
+          {
+            "name": "shortPool",
+            "type": "f64"
+          },
+          {
+            "name": "longPool",
+            "type": "f64"
+          },
+          {
+            "name": "shortWin",
+            "type": "bool"
+          },
+          {
+            "name": "longWin",
+            "type": "bool"
+          },
+          {
+            "name": "validatorThreshold",
+            "type": "i64"
+          },
+          {
+            "name": "validatorCount",
+            "type": "i64"
+          },
+          {
+            "name": "validatorThresholdReached",
+            "type": "bool"
+          },
+          {
+            "name": "dispersement",
+            "type": "f64"
+          },
+          {
+            "name": "dispersed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Validate",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "validator",
+            "type": "publicKey"
+          },
+          {
+            "name": "content",
+            "type": "publicKey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "amount",
+            "type": "f64"
+          },
+          {
+            "name": "dispersement",
+            "type": "f64"
+          },
+          {
+            "name": "dispersed",
+            "type": "bool"
+          },
+          {
+            "name": "count",
+            "type": "i64"
+          },
+          {
+            "name": "position",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "ContentRequired",
+      "msg": "Content link Required"
+    },
+    {
+      "code": 6001,
+      "name": "ThresholdEven",
+      "msg": "Validator Threshold must be odd"
+    },
+    {
+      "code": 6002,
+      "name": "ThresholdTooSmall",
+      "msg": "Validator Threshold must be 51 or greater"
+    },
+    {
+      "code": 6003,
+      "name": "ThresholdReached",
+      "msg": "Validator Threshold has been reached"
+    },
+    {
+      "code": 6004,
+      "name": "NoDispersement",
+      "msg": "No Dispersement Available"
+    }
+  ],
+  "metadata": {
+    "address": "Dw68zocSHM7ey6k3VPFxk9hU4xwRLGEhBoDWWome1y5X"
+  }
+}

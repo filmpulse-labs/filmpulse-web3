@@ -4,7 +4,7 @@ export class Tweet
 {
     constructor (publicKey, accountData) {
         this.publicKey = publicKey
-        this.author = accountData.author
+        this.author = accountData.poster
         this.timestamp = accountData.timestamp.toString()
         this.topic = accountData.topic
         this.content = accountData.content
@@ -15,7 +15,7 @@ export class Tweet
     }
 
     get author_display () {
-        const author = this.author.toBase58()
+        const author = this.poster.toBase58()
         return author.slice(0,4) + '..' + author.slice(-4)
     }
 

@@ -2,9 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
-    background-color: #595959;
+    background-color: rgb(31 41 55);
 } 
 
 .swv-dropdown {
@@ -16,7 +15,7 @@ body {
 }
 
 .swv-button-trigger {
-    @apply bg-blue-500 justify-center !important;
+    @apply bg-indigo-700 justify-center !important;
 }
 
 .swv-dropdown-list {

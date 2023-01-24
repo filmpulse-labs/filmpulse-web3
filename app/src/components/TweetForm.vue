@@ -36,7 +36,7 @@ const canTweet = computed(() => content.value && characterLimit.value > 0)
 const emit = defineEmits(['added'])
 const send = async () => {
     if (! canTweet.value) return
-    const tweet = await sendTweet(effectiveTopic.value, content.value)
+    const tweet = await sendTweet()
     emit('added', tweet)
     topic.value = ''
     content.value = ''
@@ -83,7 +83,7 @@ const send = async () => {
                 <!-- Tweet button. -->
                 <button
                     class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canTweet"
-                    :class="canTweet ? 'bg-blue' : 'bg-blue-300 cursor-not-allowed'"
+                    :class="canTweet ? 'bg-indigo-800' : 'bg-indigo-800 cursor-not-allowed'"
                     @click="send"
                 >
                     Tweet

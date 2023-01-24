@@ -101,7 +101,7 @@ const update = async () => {
                     <!-- Tweet button. -->
                     <button
                         class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canTweet"
-                        :class="canTweet ? 'bg-blue' : 'bg-blue-300 cursor-not-allowed'"
+                        :class="canTweet ? 'bg-blue' : 'bg-indigo-800 cursor-not-allowed'"
                         @click="update"
                     >
                         Update
