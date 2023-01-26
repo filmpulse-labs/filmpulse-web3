@@ -1,16 +1,34 @@
+/* eslint-disable */
 import { useWorkspace, usePagination } from '@/composables'
 import { Tweet } from '@/models'
 import bs58 from 'bs58'
 import { BN } from '@project-serum/anchor'
 import { computed, ref } from 'vue'
+import * as anchor from "@project-serum/anchor";
+import { useAnchorWallet } from 'solana-wallets-vue'
+import { Connection, PublicKey } from '@solana/web3.js'
+import { AnchorProvider, Program } from '@project-serum/anchor'
+import idl from '@/idl/gopulse.json'
 
 export const fetchTweets = async (filters = []) => {
-    const { program } = useWorkspace()
-    const tweets = await program.value.account.tweet.all(filters);
+    const clusterUrl = process.env.VUE_APP_CLUSTER_URL
+    const preflightCommitment = 'processed'
+    const commitment = 'processed'
+    const programID = new PublicKey(idl.metadata.address)
+    console.log("ProgramID: " + programID)
+    let workspace = null
+    const wallet = useAnchorWallet()
+    const connection = new Connection(clusterUrl, commitment)
+    const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
+    const program = computed(() => new Program(idl, programID, provider.value))
+
+   
+    const tweets = await program.value.account.content.all();
     return tweets.map(tweet => new Tweet(tweet.publicKey, tweet.account))
 }
 
 export const paginateTweets = (filters = [], perPage = 6, onNewPage = () => {}) => {
+    
     filters = ref(filters)
     const { program, connection } = useWorkspace()
     const page = ref(0)

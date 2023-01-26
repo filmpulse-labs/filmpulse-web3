@@ -36,7 +36,8 @@ const canTweet = computed(() => content.value && characterLimit.value > 0)
 const emit = defineEmits(['added'])
 const send = async () => {
     if (! canTweet.value) return
-    const tweet = await sendTweet()
+    const tweet = await sendTweet("content", 2000000, 9)
+    console.log(tweet)
     emit('added', tweet)
     topic.value = ''
     content.value = ''
