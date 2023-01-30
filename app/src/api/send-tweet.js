@@ -14,7 +14,6 @@ const programID = new PublicKey(idl.metadata.address)
 console.log("ProgramID: " + programID)
 let workspace = null
 
-
 export const sendTweet = async (content, amount, threshold) => {
  
     const wallet = useAnchorWallet()

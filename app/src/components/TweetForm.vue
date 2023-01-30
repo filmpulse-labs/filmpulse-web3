@@ -87,7 +87,7 @@ const send = async () => {
                     :class="canTweet ? 'bg-indigo-800' : 'bg-indigo-800 cursor-not-allowed'"
                     @click="send"
                 >
-                    Tweet
+                    Post
                 </button>
             </div>
         </div>

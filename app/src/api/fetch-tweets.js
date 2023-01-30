@@ -38,7 +38,7 @@ export const paginateTweets = (filters = [], perPage = 6, onNewPage = () => {}) 
         page.value = 0
 
         // Prepare the discriminator filter.
-        const tweetClient = program.value.account.tweet
+        const tweetClient = program.value.account.content
         const tweetAccountName = tweetClient._idlAccount.name
         const tweetDiscriminatorFilter = {
             memcmp: tweetClient.coder.accounts.memcmp(tweetAccountName)
