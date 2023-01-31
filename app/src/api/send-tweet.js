@@ -36,7 +36,7 @@ export const sendTweet = async (content, amount, threshold) => {
     console.log("Programid: " + programID)
 
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode('content')), 
+      [Buffer.from(anchor.utils.bytes.utf8.encode(content)), 
       workspace.wallet.value.publicKey.toBuffer()],
       programID
     )
@@ -48,19 +48,18 @@ export const sendTweet = async (content, amount, threshold) => {
     )
       
     console.log("Vault pda: " + vaultPDA);
-    console.log("Wallet: " + workspace.wallet.value.publicKey)
+    console.log("Wallet: " + wallet)
     console.log("Content pda: " + contentPDA);
     console.log("cluster: " + clusterUrl)
     console.log(content, amount, threshold)
 
-    await program.value.methods.postV0(content, new anchor.BN(amount), new anchor.BN(threshold))
+    await program.value.methods.postV0(content, new anchor.BN(amount * 1000000000), new anchor.BN(threshold))
         .accounts({    
             content: contentPDA,
             poster: workspace.wallet.value.publicKey,
             vault: vaultPDA,
             systemProgram: anchor.web3.SystemProgram.programId,
         })
-        .signers([workspace.wallet.value])
         .rpc()
 
         const content1 = await program.value.account.content.all();

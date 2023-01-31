@@ -4,10 +4,12 @@ export class Tweet
 {
     constructor (publicKey, accountData) {
         this.publicKey = publicKey
-        this.author = accountData.poster
+        this.poster = accountData.poster
         this.timestamp = accountData.timestamp.toString()
         this.topic = accountData.topic
-        this.content = accountData.content
+        this.content = accountData.contentLink
+        this.amount = accountData.amount/1000000000
+        this.threshold = accountData.validatorThreshold
     }
 
     get key () {

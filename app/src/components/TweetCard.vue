@@ -11,12 +11,12 @@ const props = defineProps({
 
 const { tweet } = toRefs(props)
 const { wallet } = useWorkspace()
-const isMyTweet = computed(() => wallet.value && wallet.value.publicKey.toBase58() === tweet.value.author.toBase58())
+const isMyTweet = computed(() => wallet.value && wallet.value.publicKey.toBase58() === tweet.value.poster.toBase58())
 const authorRoute = computed(() => {
     if (isMyTweet.value) {
         return { name: 'Profile' }
     } else {
-        return { name: 'Users', params: { author: tweet.value.author.toBase58() } }
+        return { name: 'Users', params: { author: tweet.value.poster.toBase58() } }
     }
 })
 
@@ -60,6 +60,8 @@ const onDelete = async () => {
             </div>
         </div>
         <p class="whitespace-pre-wrap break-all" v-text="tweet.content"></p>
+        <p class="whitespace-pre-wrap break-all" v-text="tweet.amount"></p>
+        <p class="whitespace-pre-wrap break-all" v-text="tweet.threshold"></p>
         <router-link v-if="tweet.topic" :to="{ name: 'Topics', params: { topic: tweet.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
             #{{ tweet.topic }}
         </router-link>

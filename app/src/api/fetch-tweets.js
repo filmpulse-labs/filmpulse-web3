@@ -62,7 +62,7 @@ export const paginateTweets = (filters = [], perPage = 6, onNewPage = () => {}) 
     }
 
     const pageCb = async (page, paginatedPublicKeys) => {
-        const tweets = await program.value.account.tweet.fetchMultiple(paginatedPublicKeys)
+        const tweets = await program.value.account.content.fetchMultiple(paginatedPublicKeys)
 
         return tweets.reduce((accumulator, tweet, index) => {
             const publicKey = paginatedPublicKeys[index]
