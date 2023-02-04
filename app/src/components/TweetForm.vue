@@ -53,7 +53,7 @@ const send = async () => {
             ref="textarea"
             rows="1"
             class="text-xl w-full focus:outline-none resize-none mb-3"
-            placeholder="What's happening?"
+            placeholder="Say something smart..."
             v-model="content"
         ></textarea>
 
