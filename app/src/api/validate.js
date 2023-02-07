@@ -31,7 +31,7 @@ export const validate = async (content, amount, position) => {
         program,
     }
 
-    console.log(workspace);
+    console.log("Validate Workspace: " + workspace);
     console.log("Wallet: " + workspace.wallet.value.publicKey)
     console.log("Programid: " + programID)
 

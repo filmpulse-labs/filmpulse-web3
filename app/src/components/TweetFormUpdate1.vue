@@ -114,11 +114,11 @@ const update = async () => {
 
                     <!-- Tweet button. -->
                     <button
-                        class="text-white px-4 py-2 bg-blue-800  rounded-full font-semibold" :disabled="! canTweet"
+                        class="text-white px-4 py-2 rounded-full bg-blue-800 font-semibold" :disabled="! canTweet"
                         :class="canTweet ? 'bg-blue' : 'bg-blue-800 cursor-not-allowed'"
                         @click="update"
                     >
-                        Go Long
+                        Go Short
                     </button>
                 </div>
             </div>

@@ -32,6 +32,10 @@
           "type": "string"
         },
         {
+          "name": "topic",
+          "type": "string"
+        },
+        {
           "name": "amount",
           "type": "f64"
         },
@@ -163,6 +167,10 @@
             "type": "string"
           },
           {
+            "name": "topic",
+            "type": "string"
+          },
+          {
             "name": "amount",
             "type": "f64"
           },
@@ -258,21 +266,26 @@
     },
     {
       "code": 6001,
+      "name": "ContentTooLarge",
+      "msg": "Content is too large"
+    },
+    {
+      "code": 6002,
       "name": "ThresholdEven",
       "msg": "Validator Threshold must be odd"
     },
     {
-      "code": 6002,
+      "code": 6003,
       "name": "ThresholdTooSmall",
       "msg": "Validator Threshold must be 51 or greater"
     },
     {
-      "code": 6003,
+      "code": 6004,
       "name": "ThresholdReached",
       "msg": "Validator Threshold has been reached"
     },
     {
-      "code": 6004,
+      "code": 6005,
       "name": "NoDispersement",
       "msg": "No Dispersement Available"
     }

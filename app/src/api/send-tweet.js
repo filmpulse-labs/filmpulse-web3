@@ -14,7 +14,7 @@ const programID = new PublicKey(idl.metadata.address)
 console.log("ProgramID: " + programID)
 let workspace = null
 
-export const sendTweet = async (content, amount, threshold) => {
+export const sendTweet = async (content, topic, amount, threshold) => {
  
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)
@@ -31,12 +31,13 @@ export const sendTweet = async (content, amount, threshold) => {
         program,
     }
 
-    console.log(workspace);
+    console.log("Send Post workspace: " + workspace);
     console.log("Wallet: " + workspace.wallet.value.publicKey)
     console.log("Programid: " + programID)
+    console.log("slice: " + content.slice(0, 10))
 
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content)), 
+      [Buffer.from(anchor.utils.bytes.utf8.encode(content.slice(0, 4))), 
       workspace.wallet.value.publicKey.toBuffer()],
       programID
     )
@@ -51,9 +52,9 @@ export const sendTweet = async (content, amount, threshold) => {
     console.log("Wallet: " + wallet)
     console.log("Content pda: " + contentPDA);
     console.log("cluster: " + clusterUrl)
-    console.log(content, amount, threshold)
+    console.log(content, topic, amount, threshold)
 
-    await program.value.methods.postV0(content, new anchor.BN(amount * 1000000000), new anchor.BN(threshold))
+    await program.value.methods.postV0(content, topic, new anchor.BN(amount * 1000000000), new anchor.BN(threshold))
         .accounts({    
             content: contentPDA,
             poster: workspace.wallet.value.publicKey,
@@ -62,6 +63,6 @@ export const sendTweet = async (content, amount, threshold) => {
         })
         .rpc()
 
-        const content1 = await program.value.account.content.all();
+        const content1 = await program.value.account.content.fetch(contentPDA);
         console.log(content1)
 }

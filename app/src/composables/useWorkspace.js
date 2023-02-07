@@ -8,7 +8,6 @@ const clusterUrl = process.env.VUE_APP_CLUSTER_URL
 const preflightCommitment = 'processed'
 const commitment = 'processed'
 const programID = new PublicKey(idl.metadata.address)
-console.log("use " + programID)
 let workspace = null
 
 export const useWorkspace = () => workspace
@@ -25,7 +24,7 @@ export const initWorkspace = () => {
         provider,
         program,
     }
-    console.log(workspace);
+    console.log("Useworkspace: " + workspace);
 }
 
   

@@ -25,6 +25,7 @@
     "serve": "^14.1.2",
     "solana-wallets-vue": "^0.3.2",
     "tailwindcss": "^2.2.19",
+    "unoverlay-vue": "^0.2.3",
     "vue": "^3.2.13",
     "vue-router": "^4.1.6"
   },
@@ -51,6 +52,7 @@
       "parser": "@babel/eslint-parser"
     },
     "rules": {
+      "no-unused-vars": "warn",
       "vue/script-setup-uses-vars": "error"
     }
   },

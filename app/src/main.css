@@ -15,7 +15,7 @@ body {
 }
 
 .swv-button-trigger {
-    @apply bg-indigo-700 justify-center !important;
+    @apply bg-blue-800 justify-center !important;
 }
 
 .swv-dropdown-list {
