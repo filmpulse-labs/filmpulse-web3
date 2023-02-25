@@ -14,15 +14,12 @@ const programID = new PublicKey(idl.metadata.address)
 console.log("ProgramID: " + programID)
 let workspace = null
 
-export const validate = async (content, amount, position) => {
+export const validateContent = async (content, amount, position) => {
  
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)
     const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
     const program = computed(() => new Program(idl, programID, provider.value))
-
-    const tweets = await program.value.account.content.all();
-    console.log(tweets)
 
     workspace = {
         wallet,
@@ -35,18 +32,20 @@ export const validate = async (content, amount, position) => {
     console.log("Wallet: " + workspace.wallet.value.publicKey)
     console.log("Programid: " + programID)
 
+    //G5586cHD6dvcTmmVKxXM4YnToXTm8Eh3CzNHstN9aTyC
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content)), 
-      workspace.wallet.value.publicKey.toBuffer()],
+      [Buffer.from(anchor.utils.bytes.utf8.encode(content.content)), 
+      content.poster.toBuffer()],
       programID
     )
 
     const [validatePDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode("validate")), 
-      contentPDA.toBuffer()],
+      [contentPDA.toBuffer(),
+      workspace.wallet.value.publicKey.toBuffer()],
       programID
     )
       
+    //J7XQ3r2XTGn6ryDZu3QkuZRcgi7M8RKevye48p6BC9ZA
     const [vaultPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from(anchor.utils.bytes.utf8.encode("vault")), 
       contentPDA.toBuffer()],
@@ -56,16 +55,22 @@ export const validate = async (content, amount, position) => {
     console.log("Vault pda: " + vaultPDA);
     console.log("Wallet: " + wallet)
     console.log("Content pda: " + contentPDA);
+    console.log("Validate pda: " + validatePDA);
     console.log("cluster: " + clusterUrl)
-    console.log(content, amount, threshold)
+    console.log("content: " + content.content)
+    console.log("amount: " + amount)
+    console.log("position: " + position)
 
     await program.value.methods.validateV0(new anchor.BN(amount * 1000000000), position)
         .accounts({    
-            content: contentPDA,
-            poster: workspace.wallet.value.publicKey,
-            vault: vaultPDA,
-            systemProgram: anchor.web3.SystemProgram.programId,
+          validate: validatePDA,
+          validator: workspace.wallet.value.publicKey,
+          vault: vaultPDA,
+          poster: content.poster,
+          content: contentPDA,
+          systemProgram: anchor.web3.SystemProgram.programId,
         })
+        // .signers([workspace.wallet.value])
         .rpc()
 
         const content1 = await program.value.account.content.all();

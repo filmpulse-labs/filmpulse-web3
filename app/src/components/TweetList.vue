@@ -2,27 +2,27 @@
 import { computed, toRefs } from 'vue'
 import TweetCard from '@/components/TweetCard'
 
-const emit = defineEmits(['update:tweets', 'more'])
+const emit = defineEmits(['update:posts', 'more'])
 const props = defineProps({
-    tweets: Array,
+    posts: Array,
     loading: Boolean,
     hasMore: Boolean,
 })
 
-const { tweets, loading, hasMore } = toRefs(props)
-const orderedTweets = computed(() => {
-    return tweets.value.slice().sort((a, b) => b.timestamp - a.timestamp)
+const { posts, loading, hasMore } = toRefs(props)
+const orderedposts = computed(() => {
+    return posts.value.slice().sort((a, b) => b.timestamp - a.timestamp)
 })
 
 const onDelete = deletedTweet => {
-    const filteredTweets = tweets.value.filter(tweet => tweet.publicKey.toBase58() !== deletedTweet.publicKey.toBase58())
-    emit('update:tweets', filteredTweets)
+    const filteredposts = posts.value.filter(tweet => tweet.publicKey.toBase58() !== deletedTweet.publicKey.toBase58())
+    emit('update:posts', filteredposts)
 }
 </script>
 
 <template>
     <div class="divide-y">
-        <tweet-card v-for="tweet in orderedTweets" :key="tweet.key" :tweet="tweet" @delete="onDelete"></tweet-card>
+        <tweet-card v-for="tweet in orderedposts" :key="tweet.key" :tweet="tweet" @delete="onDelete"></tweet-card>
         <div v-if="loading" class="p-8 text-gray-500 text-center">
             Loading...
         </div>

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, toRefs } from 'vue'
 import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
-import { updateTweet } from '@/api'
+import { validateContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
 
 // Props.
@@ -13,6 +13,7 @@ const { tweet } = toRefs(props)
 // Form data.
 const content = ref(tweet.value.content)
 const topic = ref(tweet.value.topic)
+const amount = ref()
 const slugTopic = useSlug(topic)
 
 // Auto-resize the content's textarea.
@@ -33,9 +34,9 @@ const canTweet = computed(() => content.value && characterLimit.value > 0)
 
 // Actions.
 const emit = defineEmits(['close'])
-const update = async () => {
+const validate = async () => {
     if (! canTweet.value) return
-    await updateTweet(tweet.value, slugTopic.value, content.value)
+    await validateContent(tweet.value, amount.value, "long")
     emit('close')
 }
 </script>
@@ -116,7 +117,7 @@ const update = async () => {
                     <button
                         class="text-white px-4 py-2 bg-blue-800  rounded-full font-semibold" :disabled="! canTweet"
                         :class="canTweet ? 'bg-blue' : 'bg-blue-800 cursor-not-allowed'"
-                        @click="update"
+                        @click="validate"
                     >
                         Go Long
                     </button>

@@ -10,7 +10,7 @@ import { Connection, PublicKey } from '@solana/web3.js'
 import { AnchorProvider, Program } from '@project-serum/anchor'
 import idl from '@/idl/gopulse.json'
 
-export const fetchTweets = async (filters = []) => {
+export const fetchposts = async (filters = []) => {
     const clusterUrl = process.env.VUE_APP_CLUSTER_URL
     const preflightCommitment = 'processed'
     const commitment = 'processed'
@@ -23,11 +23,11 @@ export const fetchTweets = async (filters = []) => {
     const program = computed(() => new Program(idl, programID, provider.value))
 
    
-    const tweets = await program.value.account.content.all();
-    return tweets.map(tweet => new Tweet(tweet.publicKey, tweet.account))
+    const posts = await program.value.account.content.all();
+    return posts.map(tweet => new Tweet(tweet.publicKey, tweet.account))
 }
 
-export const paginateTweets = (filters = [], perPage = 6, onNewPage = () => {}) => {
+export const paginateposts = (filters = [], perPage = 6, onNewPage = () => {}) => {
     
     filters = ref(filters)
     const { program, connection } = useWorkspace()
@@ -44,27 +44,27 @@ export const paginateTweets = (filters = [], perPage = 6, onNewPage = () => {}) 
             memcmp: tweetClient.coder.accounts.memcmp(tweetAccountName)
         }
 
-        // Prefetch all tweets with their timestamps only.
-        const allTweets = await connection.getProgramAccounts(program.value.programId, {
+        // Prefetch all posts with their timestamps only.
+        const allposts = await connection.getProgramAccounts(program.value.programId, {
             filters: [tweetDiscriminatorFilter, ...filters.value],
             dataSlice: { offset: 40, length: 8 },
         })
 
         // Parse the timestamp from the account's data.
-        const allTweetsWithTimestamps = allTweets.map(({ account, pubkey }) => ({
+        const allpostsWithTimestamps = allposts.map(({ account, pubkey }) => ({
             pubkey,
             timestamp: new BN(account.data, 'le'),
         }))
 
-        return allTweetsWithTimestamps
+        return allpostsWithTimestamps
             .sort((a, b) => b.timestamp.cmp(a.timestamp))
             .map(({ pubkey }) => pubkey)
     }
 
     const pageCb = async (page, paginatedPublicKeys) => {
-        const tweets = await program.value.account.content.fetchMultiple(paginatedPublicKeys)
+        const posts = await program.value.account.content.fetchMultiple(paginatedPublicKeys)
 
-        return tweets.reduce((accumulator, tweet, index) => {
+        return posts.reduce((accumulator, tweet, index) => {
             const publicKey = paginatedPublicKeys[index]
             accumulator.push(new Tweet(publicKey, tweet))
             return accumulator
@@ -76,9 +76,9 @@ export const paginateTweets = (filters = [], perPage = 6, onNewPage = () => {}) 
 
     const hasNextPage = computed(() => hasPage(page.value + 1))
     const getNextPage = async () => {
-        const newPageTweets = await getPage(page.value + 1)
+        const newPageposts = await getPage(page.value + 1)
         page.value += 1
-        onNewPage(newPageTweets)
+        onNewPage(newPageposts)
     }
 
     return { page, hasNextPage, getNextPage, ...pagination }

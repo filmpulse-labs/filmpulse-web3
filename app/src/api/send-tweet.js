@@ -21,8 +21,8 @@ export const sendTweet = async (content, topic, amount, threshold) => {
     const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
     const program = computed(() => new Program(idl, programID, provider.value))
 
-    const tweets = await program.value.account.content.all();
-    console.log(tweets)
+    const posts = await program.value.account.content.all();
+    console.log(posts)
 
     workspace = {
         wallet,
@@ -37,7 +37,7 @@ export const sendTweet = async (content, topic, amount, threshold) => {
     console.log("slice: " + content.slice(0, 10))
 
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content.slice(0, 4))), 
+      [Buffer.from(anchor.utils.bytes.utf8.encode(content.slice(0, 10))), 
       workspace.wallet.value.publicKey.toBuffer()],
       programID
     )
