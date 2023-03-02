@@ -1,6 +1,6 @@
 import dayjs from "dayjs"
 
-export class Tweet
+export class PostContent
 {
     constructor (publicKey, accountData) {
         this.publicKey = publicKey

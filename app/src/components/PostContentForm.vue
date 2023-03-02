@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, toRefs } from 'vue'
 import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
-import { sendTweet } from '@/api'
+import { sendPostContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
 
 // Props.
@@ -32,14 +32,14 @@ const characterLimitColour = computed(() => {
 
 // Permissions.
 const { connected } = useWallet()
-const canTweet = computed(() => content.value && characterLimit.value > 0)
+const canPostContent = computed(() => content.value && characterLimit.value > 0)
 
 // Actions.
 const emit = defineEmits(['added'])
 const send = async () => {
-    if (! canTweet.value) return
-    const tweet = await sendTweet(content.value, topic.value, amount.value, threshold.value)
-    emit('added', tweet)
+    if (! canPostContent.value) return
+    const postContent = await sendPostContent(content.value, topic.value, amount.value, threshold.value)
+    emit('added', postContent)
     topic.value = ''
     content.value = ''
 }
@@ -104,10 +104,10 @@ const send = async () => {
                     {{ characterLimit }} left
                 </div>
 
-                <!-- Tweet button. -->
+                <!-- PostContent button. -->
                 <button
-                    class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canTweet"
-                    :class="canTweet ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
+                    class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
+                    :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
                     @click="send"
                 >
                     Post

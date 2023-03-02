@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useWorkspace, usePagination } from '@/composables'
-import { Tweet } from '@/models'
+import { PostContent } from '@/models'
 import bs58 from 'bs58'
 import { BN } from '@project-serum/anchor'
 import { computed, ref } from 'vue'
@@ -24,7 +24,7 @@ export const fetchposts = async (filters = []) => {
 
    
     const posts = await program.value.account.content.all();
-    return posts.map(tweet => new Tweet(tweet.publicKey, tweet.account))
+    return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
 }
 
 export const paginateposts = (filters = [], perPage = 6, onNewPage = () => {}) => {
@@ -38,15 +38,15 @@ export const paginateposts = (filters = [], perPage = 6, onNewPage = () => {}) =
         page.value = 0
 
         // Prepare the discriminator filter.
-        const tweetClient = program.value.account.content
-        const tweetAccountName = tweetClient._idlAccount.name
-        const tweetDiscriminatorFilter = {
-            memcmp: tweetClient.coder.accounts.memcmp(tweetAccountName)
+        const postContentClient = program.value.account.content
+        const postContentAccountName = postContentClient._idlAccount.name
+        const postContentDiscriminatorFilter = {
+            memcmp: postContentClient.coder.accounts.memcmp(postContentAccountName)
         }
 
         // Prefetch all posts with their timestamps only.
         const allposts = await connection.getProgramAccounts(program.value.programId, {
-            filters: [tweetDiscriminatorFilter, ...filters.value],
+            filters: [postContentDiscriminatorFilter, ...filters.value],
             dataSlice: { offset: 40, length: 8 },
         })
 
@@ -64,9 +64,9 @@ export const paginateposts = (filters = [], perPage = 6, onNewPage = () => {}) =
     const pageCb = async (page, paginatedPublicKeys) => {
         const posts = await program.value.account.content.fetchMultiple(paginatedPublicKeys)
 
-        return posts.reduce((accumulator, tweet, index) => {
+        return posts.reduce((accumulator, postContent, index) => {
             const publicKey = paginatedPublicKeys[index]
-            accumulator.push(new Tweet(publicKey, tweet))
+            accumulator.push(new PostContent(publicKey, postContent))
             return accumulator
         }, [])
     }

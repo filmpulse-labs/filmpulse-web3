@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { paginateposts, authorFilter } from '@/api'
 import { useFromRoute } from '@/composables'
-import TweetList from '@/components/TweetList'
+import PostContentList from '@/components/PostContentList'
 import PostSearch from '@/components/PostSearch'
 
 // Data.
@@ -50,7 +50,7 @@ useFromRoute((route) => {
         </template>
     </post-search>
     <div v-if="viewedAuthor">
-        <tweet-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></tweet-list>
+        <postContent-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></postContent-list>
         <div v-if="!loading && posts.length === 0" class="p-8 text-gray-500 text-center">
             User not found...
         </div>

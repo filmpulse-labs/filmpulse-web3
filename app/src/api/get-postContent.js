@@ -1,8 +1,8 @@
 import { useWorkspace } from '@/composables'
-import { Tweet } from '@/models'
+import { PostContent } from '@/models'
 
-export const getTweet = async (publicKey) => {
+export const getPostContent = async (publicKey) => {
     const { program } = useWorkspace()
     const account = await program.value.account.content.fetch(publicKey);
-    return new Tweet(publicKey, account)
+    return new PostContent(publicKey, account)
 }

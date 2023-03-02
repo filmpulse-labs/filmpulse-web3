@@ -1,6 +1,6 @@
 <script setup>
 import { computed, toRefs } from 'vue'
-import TweetCard from '@/components/TweetCard'
+import PostContentCard from '@/components/PostContentCard'
 
 const emit = defineEmits(['update:posts', 'more'])
 const props = defineProps({
@@ -14,15 +14,15 @@ const orderedposts = computed(() => {
     return posts.value.slice().sort((a, b) => b.timestamp - a.timestamp)
 })
 
-const onDelete = deletedTweet => {
-    const filteredposts = posts.value.filter(tweet => tweet.publicKey.toBase58() !== deletedTweet.publicKey.toBase58())
+const onDelete = deletedPostContent => {
+    const filteredposts = posts.value.filter(postContent => postContent.publicKey.toBase58() !== deletedPostContent.publicKey.toBase58())
     emit('update:posts', filteredposts)
 }
 </script>
 
 <template>
     <div class="divide-y">
-        <tweet-card v-for="tweet in orderedposts" :key="tweet.key" :tweet="tweet" @delete="onDelete"></tweet-card>
+        <postContent-card v-for="postContent in orderedposts" :key="postContent.key" :postContent="postContent" @delete="onDelete"></postContent-card>
         <div v-if="loading" class="p-8 text-gray-500 text-center">
             Loading...
         </div>

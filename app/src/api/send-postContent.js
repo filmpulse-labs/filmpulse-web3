@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Tweet } from '@/models'
+import { PostContent } from '@/models'
 import * as anchor from "@project-serum/anchor";
 import { computed } from 'vue'
 import { useAnchorWallet } from 'solana-wallets-vue'
@@ -14,7 +14,7 @@ const programID = new PublicKey(idl.metadata.address)
 console.log("ProgramID: " + programID)
 let workspace = null
 
-export const sendTweet = async (content, topic, amount, threshold) => {
+export const sendPostContent = async (content, topic, amount, threshold) => {
  
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)

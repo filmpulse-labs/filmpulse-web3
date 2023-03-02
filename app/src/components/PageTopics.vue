@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { paginateposts, topicFilter } from '@/api'
 import { useSlug, useFromRoute } from '@/composables'
-import TweetForm from '@/components/TweetForm'
-import TweetList from '@/components/TweetList'
+import PostContentForm from '@/components/PostContentForm'
+import PostContentList from '@/components/PostContentList'
 import PostSearch from '@/components/PostSearch'
 
 // Data.
@@ -31,7 +31,7 @@ const fetchTopicposts = () => {
     prefetch().then(getNextPage)
 }
 
-const addTweet = tweet => posts.value.push(tweet)
+const addPostContent = postContent => posts.value.push(postContent)
 
 // Router hooks.
 useFromRoute((route) => {
@@ -54,8 +54,8 @@ useFromRoute((route) => {
         </template>
     </post-search>
     <div v-if="viewedTopic">
-        <tweet-form @added="addTweet" :forced-topic="viewedTopic"></tweet-form>
-        <tweet-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></tweet-list>
+        <postContent-form @added="addPostContent" :forced-topic="viewedTopic"></postContent-form>
+        <postContent-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></postContent-list>
         <div v-if="!loading && posts.length === 0" class="p-8 text-gray-500 text-center">
             No posts were found in this topic...
         </div>

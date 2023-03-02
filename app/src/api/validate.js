@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Tweet } from '@/models'
+import { PostContent } from '@/models'
 import * as anchor from "@project-serum/anchor";
 import { computed } from 'vue'
 import { useAnchorWallet } from 'solana-wallets-vue'
@@ -32,9 +32,8 @@ export const validateContent = async (content, amount, position) => {
     console.log("Wallet: " + workspace.wallet.value.publicKey)
     console.log("Programid: " + programID)
 
-    //G5586cHD6dvcTmmVKxXM4YnToXTm8Eh3CzNHstN9aTyC
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content.content)), 
+      [Buffer.from(anchor.utils.bytes.utf8.encode(content.content.slice(0, 10))), 
       content.poster.toBuffer()],
       programID
     )
@@ -45,7 +44,6 @@ export const validateContent = async (content, amount, position) => {
       programID
     )
       
-    //J7XQ3r2XTGn6ryDZu3QkuZRcgi7M8RKevye48p6BC9ZA
     const [vaultPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
       [Buffer.from(anchor.utils.bytes.utf8.encode("vault")), 
       contentPDA.toBuffer()],
@@ -70,7 +68,6 @@ export const validateContent = async (content, amount, position) => {
           content: contentPDA,
           systemProgram: anchor.web3.SystemProgram.programId,
         })
-        // .signers([workspace.wallet.value])
         .rpc()
 
         const content1 = await program.value.account.content.all();
