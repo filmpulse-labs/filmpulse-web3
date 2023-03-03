@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, toRefs } from 'vue'
 import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
-import { updatePostContent } from '@/api'
+import { validateContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
 
 // Props.
@@ -13,6 +13,7 @@ const { postContent } = toRefs(props)
 // Form data.
 const content = ref(postContent.value.content)
 const topic = ref(postContent.value.topic)
+const amount = ref()
 const slugTopic = useSlug(topic)
 
 // Auto-resize the content's textarea.
@@ -33,9 +34,9 @@ const canPostContent = computed(() => content.value && characterLimit.value > 0)
 
 // Actions.
 const emit = defineEmits(['close'])
-const update = async () => {
+const validate = async () => {
     if (! canPostContent.value) return
-    await updatePostContent(postContent.value, slugTopic.value, content.value)
+    await validateContent(postContent.value, amount.value, "short")
     emit('close')
 }
 </script>
@@ -116,7 +117,7 @@ const update = async () => {
                     <button
                         class="text-white px-4 py-2 rounded-full bg-blue-800 font-semibold" :disabled="! canPostContent"
                         :class="canPostContent ? 'bg-blue' : 'bg-blue-800 cursor-not-allowed'"
-                        @click="update"
+                        @click="validate"
                     >
                         Go Short
                     </button>

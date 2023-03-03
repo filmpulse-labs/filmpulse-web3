@@ -14,15 +14,11 @@ const orderedposts = computed(() => {
     return posts.value.slice().sort((a, b) => b.timestamp - a.timestamp)
 })
 
-const onDelete = deletedPostContent => {
-    const filteredposts = posts.value.filter(postContent => postContent.publicKey.toBase58() !== deletedPostContent.publicKey.toBase58())
-    emit('update:posts', filteredposts)
-}
 </script>
 
 <template>
     <div class="divide-y">
-        <postContent-card v-for="postContent in orderedposts" :key="postContent.key" :postContent="postContent" @delete="onDelete"></postContent-card>
+        <postContent-card v-for="postContent in orderedposts" :key="postContent.key" :postContent="postContent"></postContent-card>
         <div v-if="loading" class="p-8 text-gray-500 text-center">
             Loading...
         </div>

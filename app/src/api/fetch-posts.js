@@ -27,7 +27,7 @@ export const fetchposts = async (filters = []) => {
     return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
 }
 
-export const paginateposts = (filters = [], perPage = 6, onNewPage = () => {}) => {
+export const paginateposts = (filters = [], perPage = 20, onNewPage = () => {}) => {
     
     filters = ref(filters)
     const { program, connection } = useWorkspace()

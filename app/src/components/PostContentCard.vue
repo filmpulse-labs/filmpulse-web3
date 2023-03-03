@@ -2,8 +2,8 @@
 import { ref, toRefs, computed } from 'vue'
 import { useWorkspace } from '@/composables'
 // import { deletePostContent } from '@/api'
-import PostContentFormUpdate from './PostContentFormUpdate'
-import PostContentFormUpdate1 from './PostContentFormUpdate1'
+import GoLongForm from './GoLongForm'
+import GoShortForm from './GoShortForm'
 
 // const emit = defineEmits(['delete']);
 const props = defineProps({
@@ -28,8 +28,8 @@ const mayGoShort = ref(false)
 
 <template>
 
-    <postContent-form-update v-if="mayGoLong" :postContent="postContent" @close="mayGoLong = false"></postContent-form-update>
-    <postContent-form-update1 v-if="mayGoShort" :postContent="postContent" @close="mayGoShort = false"></postContent-form-update1>
+    <go-long-form v-if="mayGoLong" :postContent="postContent" @close="mayGoLong = false"></go-long-form>
+    <go-short-form v-if="mayGoShort" :postContent="postContent" @close="mayGoShort = false"></go-short-form>
     <div class="px-8 py-4" v-else>
         <div class="flex justify-between">
             <div class="py-1">
@@ -52,7 +52,7 @@ const mayGoShort = ref(false)
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.content"></p>
                 </div>
 
-                <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
+        <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
             #{{ postContent.topic }}
         </router-link>
                 
