@@ -5,6 +5,7 @@ import PostContentForm from '@/components/PostContentForm'
 import PostContentList from '@/components/PostContentList'
 
 const posts = ref([])
+
 const onNewPage = newposts => posts.value.push(...newposts)
 const { prefetch, hasNextPage, getNextPage, loading } = paginateposts([], 10, onNewPage)
 prefetch().then(getNextPage)

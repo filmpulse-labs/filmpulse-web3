@@ -15,7 +15,6 @@ export const fetchposts = async (filters = []) => {
     const preflightCommitment = 'processed'
     const commitment = 'processed'
     const programID = new PublicKey(idl.metadata.address)
-    console.log("ProgramID: " + programID)
     let workspace = null
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)

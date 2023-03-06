@@ -15,6 +15,11 @@ export default [
         component: require('@/components/PageUsers').default,
     },
     {
+        name: 'Validated',
+        path: '/validated',
+        component: require('@/components/PageValidated').default,
+    },
+    {
         name: 'Profile',
         path: '/profile',
         component: require('@/components/PageProfile').default,

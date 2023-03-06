@@ -37,6 +37,15 @@ const { connected } = useWallet()
                 </svg>
                 <div class="text-xl hidden md:block">Users</div>
             </router-link>
+            <router-link v-if="connected" :to="{ name: 'Validated' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
+                <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" clip-rule="evenodd" />
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" />
+                </svg>
+                <div class="text-xl hidden md:block">Validated</div>
+            </router-link>
             <router-link v-if="connected" :to="{ name: 'Profile' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
                 <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />

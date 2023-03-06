@@ -70,6 +70,9 @@ export const validateContent = async (content, amount, position) => {
         })
         .rpc()
 
-        const content1 = await program.value.account.content.all();
+        const validate = await program.value.account.validate.fetch(validatePDA)
+        console.log(validate)
+
+        const content1 = await program.value.account.content.fetch(contentPDA)
         console.log(content1)
 }

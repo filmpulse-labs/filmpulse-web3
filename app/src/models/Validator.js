@@ -1,30 +1,24 @@
 import dayjs from "dayjs"
 
-export class PostContent
+export class Validator
 {
     constructor (publicKey, accountData) {
         this.publicKey = publicKey
-        this.poster = accountData.poster
+        this.validator = accountData.validator
+        this.content = accountData.content
         this.timestamp = accountData.timestamp.toString()
-        this.topic = accountData.topic
-        this.content = accountData.contentLink
         this.amount = accountData.amount/1000000000
-        this.threshold = accountData.validatorThreshold
-        this.totalPool = accountData.totalPool
-        this.shortPool = accountData.shortPool
-        this.longPool = accountData.longPool
-        this.shortWin = accountData.shortWin
-        this.validatorCount = accountData.validatorCount
-        this.validatorThresholdReached = accountData.validatorThresholdReached
         this.dispersement = accountData.dispersement
         this.dispersed = accountData.dispersed
+        this.count = accountData.count
+        this.position = accountData.position
     }
 
     get key () {
         return this.publicKey.toBase58()
     }
 
-    get author_display () {
+    get validator_display () {
         const author = this.poster.toBase58()
         return author.slice(0,4) + '..' + author.slice(-4)
     }
