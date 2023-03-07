@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
-import { fetchvalidated, paginateposts, authorFilter } from '@/api'
+import { fetchvalidated, paginateposts } from '@/api'
 import PostContentList from '@/components/PostContentList'
 import { useWorkspace } from '@/composables'
 import { PostContent } from '@/models'

@@ -8,7 +8,7 @@ import * as anchor from "@project-serum/anchor";
 import { useAnchorWallet } from 'solana-wallets-vue'
 import { Connection, PublicKey } from '@solana/web3.js'
 import { AnchorProvider, Program } from '@project-serum/anchor'
-import idl from '@/idl/gopulse.json'
+import idl from '@/idl/gopulse.json' 
 
 export const fetchposts = async (filters = []) => {
     const clusterUrl = process.env.VUE_APP_CLUSTER_URL

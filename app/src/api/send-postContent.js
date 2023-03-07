@@ -11,7 +11,6 @@ const clusterUrl = process.env.VUE_APP_CLUSTER_URL
 const preflightCommitment = 'processed'
 const commitment = 'processed'
 const programID = new PublicKey(idl.metadata.address)
-console.log("ProgramID: " + programID)
 let workspace = null
 
 export const sendPostContent = async (content, topic, amount, threshold) => {
@@ -22,7 +21,6 @@ export const sendPostContent = async (content, topic, amount, threshold) => {
     const program = computed(() => new Program(idl, programID, provider.value))
 
     const posts = await program.value.account.content.all();
-    console.log(posts)
 
     workspace = {
         wallet,
@@ -34,10 +32,14 @@ export const sendPostContent = async (content, topic, amount, threshold) => {
     console.log("Send Post workspace: " + workspace);
     console.log("Wallet: " + workspace.wallet.value.publicKey)
     console.log("Programid: " + programID)
-    console.log("slice: " + content.slice(0, 10))
+
+    // let substr = content.match(/\b(\w)/g); // ['J','S','O','N']
+    // let acronym = matches.join('');
+
+    // console.log("slice: " + substr)
 
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content.slice(0, 10))), 
+      [Buffer.from(anchor.utils.bytes.utf8.encode(content.slice(0,10))), 
       workspace.wallet.value.publicKey.toBuffer()],
       programID
     )

@@ -28,11 +28,11 @@
       ],
       "args": [
         {
-          "name": "contentLink",
+          "name": "topic",
           "type": "string"
         },
         {
-          "name": "topic",
+          "name": "contentLink",
           "type": "string"
         },
         {
@@ -163,11 +163,11 @@
             "type": "i64"
           },
           {
-            "name": "contentLink",
+            "name": "topic",
             "type": "string"
           },
           {
-            "name": "topic",
+            "name": "contentLink",
             "type": "string"
           },
           {
@@ -272,17 +272,17 @@
     {
       "code": 6002,
       "name": "ThresholdEven",
-      "msg": "Validator Threshold must be odd"
+      "msg": "Market size must be odd"
     },
     {
       "code": 6003,
       "name": "ThresholdTooSmall",
-      "msg": "Validator Threshold must be 51 or greater"
+      "msg": "Market size must be 3 or greater"
     },
     {
       "code": 6004,
       "name": "ThresholdReached",
-      "msg": "Validator Threshold has been reached"
+      "msg": "Market size has been reached"
     },
     {
       "code": 6005,

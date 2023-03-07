@@ -5,11 +5,11 @@ const { connected } = useWallet()
 
 <template>
     <aside class="flex flex-col items-center md:items-stretch space-y-2 md:space-y-4">
-        <router-link :to="{ name: 'Home' }" class="inline-block rounded-full hover:bg-gray-100 p-3 md:self-start">
+        <router-link :to="{ name: 'Home' }" class="inline-block rounded-full hover:bg-gray-700 p-3 md:self-start">
             <img src="../../public/95977021.png" alt="alternatetext" style="width: 50px; height: 50px;">
         </router-link>
         <div class="flex flex-col items-center md:items-stretch space-y-2">
-            <router-link :to="{ name: 'Home' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
+            <router-link :to="{ name: 'Home' }" class="rounded-full hover:bg-blue-800 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
                 <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                 </svg>
@@ -18,7 +18,7 @@ const { connected } = useWallet()
                 </svg>
                 <div class="text-xl hidden md:block">Home</div>
             </router-link>
-            <router-link :to="{ name: 'Topics' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
+            <router-link :to="{ name: 'Topics' }" class="rounded-full hover:bg-blue-800 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
                 <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
                     <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z" />
@@ -28,7 +28,7 @@ const { connected } = useWallet()
                 </svg>
                 <div class="text-xl hidden md:block">Topics</div>
             </router-link>
-            <router-link :to="{ name: 'Users' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
+            <router-link :to="{ name: 'Users' }" class="rounded-full hover:bg-blue-800 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
                 <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                 </svg>
@@ -37,7 +37,7 @@ const { connected } = useWallet()
                 </svg>
                 <div class="text-xl hidden md:block">Users</div>
             </router-link>
-            <router-link v-if="connected" :to="{ name: 'Validated' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
+            <router-link v-if="connected" :to="{ name: 'Validated' }" class="rounded-full hover:bg-blue-800 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
                 <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z" clip-rule="evenodd" />
                 </svg>
@@ -46,7 +46,7 @@ const { connected } = useWallet()
                 </svg>
                 <div class="text-xl hidden md:block">Validated</div>
             </router-link>
-            <router-link v-if="connected" :to="{ name: 'Profile' }" class="rounded-full hover:bg-gray-100 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
+            <router-link v-if="connected" :to="{ name: 'Profile' }" class="rounded-full hover:bg-blue-800 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">
                 <svg v-if="isActive" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-700" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                 </svg>

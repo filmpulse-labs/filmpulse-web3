@@ -3,6 +3,19 @@ import { computed, ref, toRefs } from 'vue'
 import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
 import { sendPostContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
+import { useAnchorWallet } from 'solana-wallets-vue'
+import { Connection, PublicKey } from '@solana/web3.js'
+import { AnchorProvider, Program } from '@project-serum/anchor'
+import idl from '@/idl/gopulse.json'
+
+const clusterUrl = process.env.VUE_APP_CLUSTER_URL
+const preflightCommitment = 'processed'
+const commitment = 'processed'
+const programID = new PublicKey(idl.metadata.address)
+const wallet = useAnchorWallet()
+const connection = new Connection(clusterUrl, commitment)
+const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
+const program = computed(() => new Program(idl, programID, provider.value))
 
 // Props.
 const props = defineProps({
@@ -43,6 +56,7 @@ const send = async () => {
     topic.value = ''
     content.value = ''
 }
+
 </script>
 
 <template>
@@ -52,7 +66,7 @@ const send = async () => {
         <textarea
             ref="textarea"
             rows="1"
-            class="text-xl w-full focus:outline-none resize-none mb-3 bg-gray-500"
+            class="text-xl rounded w-full focus:outline-none pl-5 py-5 resize-none mb-3 bg-gray-500"
             placeholder="Say something smart or post a link..."
             v-model="content"
         ></textarea>
@@ -63,39 +77,31 @@ const send = async () => {
             <div class="relative m-2 mr-4">
                 <input
                     type="text"
-                    placeholder="topic"
-                    class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500"
+                    placeholder="Topic"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     :value="effectiveTopic"
                     :disabled="forcedTopic"
                     @input="topic = $event.target.value"
                 >
-                <div class="absolute left-0 inset-y-0 flex pl-3 pr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto" :class="effectiveTopic ? 'text-blue-800' : 'text-gray-400'" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9.243 3.03a1 1 0 01.727 1.213L9.53 6h2.94l.56-2.243a1 1 0 111.94.486L14.53 6H17a1 1 0 110 2h-2.97l-1 4H15a1 1 0 110 2h-2.47l-.56 2.242a1 1 0 11-1.94-.485L10.47 14H7.53l-.56 2.242a1 1 0 11-1.94-.485L5.47 14H3a1 1 0 110-2h2.97l1-4H5a1 1 0 110-2h2.47l.56-2.243a1 1 0 011.213-.727zM9.03 8l-1 4h2.938l1-4H9.031z" clip-rule="evenodd" />
-                    </svg>
-                </div>
+               
             </div>
             <div class="relative m-2 mr-4">
                 <input
                     type="float"
                     placeholder="SOL"
-                    class="text-blue-800 rounded-full pl-3 pr-4 py-2 bg-gray-500"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     @input="amount = $event.target.value"
                 >
-                <div class="absolute left-0 inset-y-0 flex pl-3 pr-2">
                 
-                </div>
             </div>
             <div class="relative m-2 mr-4">
                 <input
                     type="number"
-                    placeholder="Threshold"
-                    class="text-blue-800 rounded-full pl-3 pr-4 py-2 bg-gray-500"
+                    placeholder="Market Size"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     @input="threshold = $event.target.value"
                 >
-                <div class="absolute left-0 inset-y-0 flex pl-3 pr-2">
-                    
-                </div>
+        
             </div>
             <div class="flex items-center space-x-6 m-2 ml-auto">
 
