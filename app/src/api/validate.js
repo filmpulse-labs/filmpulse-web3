@@ -33,7 +33,7 @@ export const validateContent = async (content, amount, position) => {
     console.log("Programid: " + programID)
 
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content.content.slice(0, 10))), 
+      [new anchor.BN(content.postCounter).toArrayLike(Buffer, "le", 8),
       content.poster.toBuffer()],
       programID
     )
@@ -55,7 +55,7 @@ export const validateContent = async (content, amount, position) => {
     console.log("Content pda: " + contentPDA);
     console.log("Validate pda: " + validatePDA);
     console.log("cluster: " + clusterUrl)
-    console.log("content: " + content.content)
+    console.log("content: " + Number(content.postCounter))
     console.log("amount: " + amount)
     console.log("position: " + position)
 

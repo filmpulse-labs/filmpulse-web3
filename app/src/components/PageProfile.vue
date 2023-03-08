@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
-import { paginateposts, authorFilter } from '@/api'
+import { paginateposts, authorFilter, fetchUser } from '@/api'
 import PostContentForm from '@/components/PostContentForm'
 import PostContentList from '@/components/PostContentList'
 import PageUserForm from '@/components/PageUserForm'
@@ -10,6 +10,8 @@ const posts = ref([])
 const { wallet } = useWorkspace()
 const filters = ref([])
 let update = ref(false)
+let username = ref()
+let useravatar = ref()
 
 const onNewPage = newposts => posts.value.push(...newposts)
 const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 10, onNewPage)
@@ -27,11 +29,20 @@ function toggleSettings() {
     update.value = !update.value
 }
 
+fetchUser(wallet.value.publicKey).then(res => {
+    username.value = res.name
+    useravatar.value = res.avatar
+})
+
 </script>
 
 <template>
     <div v-if="wallet" class="border-b px-8 py-4 bg-gray-500 break-all">
-        {{ wallet.publicKey.toBase58() }}
+        <span>
+            <img style="border-radius: 50%; max-height: 100px; max-width: 100px" v-bind:src=this.useravatar>
+            <h1 style="font-size: 24px;">{{ this.username }}</h1>
+        </span>
+        <h5 style="font-size: 14px;">{{ wallet.publicKey.toBase58() }}</h5>
         <div class="flex items-center space-x-6 m-2 ml-auto">
     <button
         class="text-white bg-blue-800 px-4 py-2 rounded-full font-semibold"

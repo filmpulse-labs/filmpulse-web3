@@ -55,6 +55,8 @@ const send = async () => {
     emit('added', postContent)
     topic.value = ''
     content.value = ''
+    amount.value = ''
+    threshold.value = ''
 }
 
 </script>

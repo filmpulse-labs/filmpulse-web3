@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { paginateposts, authorFilter } from '@/api'
+import { paginateposts, authorFilter, fetchUser } from '@/api'
 import { useFromRoute } from '@/composables'
 import PostContentList from '@/components/PostContentList'
 import PostSearch from '@/components/PostSearch'
@@ -12,6 +12,8 @@ const posts = ref([])
 const author = ref('')
 const viewedAuthor = ref('')
 const filters = ref([])
+let username = ref()
+let useravatar = ref()
 
 const onNewPage = newposts => posts.value.push(...newposts)
 const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 10, onNewPage)
@@ -39,6 +41,17 @@ useFromRoute((route) => {
         viewedAuthor.value = ''
     }
 })
+
+try {
+    console.log(author.value)
+    fetchUser(author.value).then(res => {
+    console.log(res)
+    username.value = res.name
+    useravatar.value = res.avatar
+})
+} catch (error) {
+    console.log(error)
+}
 </script>
 
 <template>

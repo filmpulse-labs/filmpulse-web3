@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, toRefs } from 'vue'
-import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
-import { sendPostContent } from '@/api'
+import { useAutoresizeTextarea } from '@/composables'
+import { createUser, updateUser, fetchUser } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
 import { useAnchorWallet } from 'solana-wallets-vue'
 import { Connection, PublicKey } from '@solana/web3.js'
@@ -26,6 +26,9 @@ const { forcedTopic } = toRefs(props)
 // Form data.
 const name = ref('')
 const avatar = ref('')
+const username = ref('')
+const useravatar = ref('')
+const profileExists = ref()
 
 // Auto-resize the content's textarea.
 const textarea = ref()
@@ -43,10 +46,28 @@ useAutoresizeTextarea(textarea)
 const { connected } = useWallet()
 const canPostContent = computed(() => name.value && avatar.value)
 
+fetchUser(wallet.value.publicKey).then(res => {
+    profileExists.value = true
+    console.log(profileExists.value)
+    username.value = res.name
+    useravatar.value = res.avatar
+}).catch(() => {
+    profileExists.value = false
+    console.log(profileExists.value)
+})
+
 // Actions.
-const send = async () => {
+const emit = defineEmits(['added'])
+const setProfile = async () => {
     console.log(name.value, avatar.value)
-    //const postContent = await sendPostContent(content.value, topic.value, amount.value, threshold.value)
+    await createUser(name.value, avatar.value)
+    name.value = ''
+    avatar.value = ''
+}
+
+const updateProfile = async () => {
+    console.log(name.value, avatar.value)
+    await updateUser(name.value, avatar.value)
     name.value = ''
     avatar.value = ''
 }
@@ -55,8 +76,6 @@ const send = async () => {
 
 <template>
     <div v-if="connected" class="px-8 py-4 border-b">
-
-        
 
         <div class="flex flex-wrap items-center justify-between -m-2">
 
@@ -85,13 +104,20 @@ const send = async () => {
             
             <div class="flex items-center space-x-6 m-2 ml-auto">
 
+                <button v-if="!profileExists"
+                    class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
+                    :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
+                    @click="setProfile"
+                >
+                    Set Profile
+                </button>
                 
 
                 <!-- PostContent button. -->
-                <button
+                <button v-if="profileExists"
                     class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
                     :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
-                    @click="send"
+                    @click="updateProfile"
                 >
                     Update Profile
                 </button>
