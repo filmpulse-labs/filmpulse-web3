@@ -28,11 +28,11 @@
       ],
       "args": [
         {
-          "name": "topic",
+          "name": "contentLink",
           "type": "string"
         },
         {
-          "name": "contentLink",
+          "name": "topic",
           "type": "string"
         },
         {
@@ -41,6 +41,10 @@
         },
         {
           "name": "validatorThreshold",
+          "type": "i64"
+        },
+        {
+          "name": "postCounter",
           "type": "i64"
         }
       ]
@@ -196,6 +200,10 @@
           },
           {
             "name": "validatorThreshold",
+            "type": "i64"
+          },
+          {
+            "name": "postCounter",
             "type": "i64"
           },
           {

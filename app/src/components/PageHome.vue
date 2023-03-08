@@ -14,6 +14,5 @@ const addPostContent = postContent => posts.value.push(postContent)
 </script>
 
 <template>
-    <postContent-form @added="addPostContent"></postContent-form>
     <postContent-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></postContent-list>
 </template>

@@ -10,6 +10,7 @@ export class PostContent
         this.content = accountData.contentLink
         this.amount = accountData.amount/1000000000
         this.threshold = accountData.validatorThreshold
+        this.postCounter = accountData.postCounter
         this.totalPool = accountData.totalPool
         this.shortPool = accountData.shortPool
         this.longPool = accountData.longPool

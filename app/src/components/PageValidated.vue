@@ -3,34 +3,12 @@ import { ref, watchEffect } from 'vue'
 import { fetchvalidated, paginateposts } from '@/api'
 import PostContentList from '@/components/PostContentList'
 import { useWorkspace } from '@/composables'
-import { PostContent } from '@/models'
-
 
 const posts = ref([])
 const { wallet, program } = useWorkspace()
 const filters = ref([])
-let validatedPosts = []
-let validPosts = []
 
-function fetchValidPost(posts) {
-    console.log(posts)
-    return posts.map(postContent => new PostContent(postContent.pub, postContent.post))
-}
-
-fetchvalidated().then(async (srs) => {
-    for (let index = 0; index < srs.length; index++) {
-        const element = srs[index];
-        if (element.validator.toBase58() == wallet.value.publicKey.toBase58()) {
-            let pub = element.content 
-            const post = await program.value.account.content.fetch(pub);
-            console.log(post)
-            validatedPosts.push({pub, post}) 
-        }
-    }
-    console.log("posts: " + validatedPosts)
-    fetchValidPost(validatedPosts)
-    console.log("vposts: " + validPosts)
-})
+fetchvalidated()
 
 const onNewPage = newposts => posts.value.push(...newposts)
 const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 10, onNewPage)

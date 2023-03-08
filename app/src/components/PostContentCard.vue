@@ -48,8 +48,9 @@ const mayGoShort = ref(false)
         
         </div>
         <div class="flex flex-wrap items-center justify-between -m-2">
-                <div class="relative m-2 mr-4">
-                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.content"></p>
+                <div class="m-2 mr-4">
+                    <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-text="postContent.content">
+                    </p>
                 </div>
 
         <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">

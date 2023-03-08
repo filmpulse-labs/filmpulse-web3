@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { useWorkspace, usePagination } from '@/composables'
-import { PostContent } from '@/models'
+import { PostContent, Validator } from '@/models'
 import bs58 from 'bs58'
 import { BN } from '@project-serum/anchor'
 import { computed, ref } from 'vue'
@@ -21,9 +21,43 @@ export const fetchposts = async (filters = []) => {
     const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
     const program = computed(() => new Program(idl, programID, provider.value))
 
-   
     const posts = await program.value.account.content.all();
     return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
+}
+
+export const fetchvalidated = async (filters = []) => {
+    const clusterUrl = process.env.VUE_APP_CLUSTER_URL
+    const preflightCommitment = 'processed'
+    const commitment = 'processed'
+    const programID = new PublicKey(idl.metadata.address)
+    let workspace = null
+    const wallet = useAnchorWallet()
+    const connection = new Connection(clusterUrl, commitment)
+    const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
+    const program = computed(() => new Program(idl, programID, provider.value))
+
+    let userValidated = await program.value.account.validate.all([
+        {
+            memcmp: {
+                offset: 8,
+                bytes: wallet.value.publicKey.toBase58(),
+            }
+        }
+    ])
+
+    let keys = userValidated.map(validContent => new Validator(validContent.publicKey, validContent.account))
+
+    let postsArr = []
+
+    for (let index = 0; index < keys.length; index++) {
+        const element = keys[index];
+        postsArr.push(element.content)
+    }
+
+    const posts = await program.value.account.content.fetchMultiple(postsArr)
+    console.log(posts)
+    
+    //return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
 }
 
 export const paginateposts = (filters = [], perPage = 20, onNewPage = () => {}) => {

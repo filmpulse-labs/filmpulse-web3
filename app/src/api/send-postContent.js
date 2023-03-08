@@ -33,13 +33,21 @@ export const sendPostContent = async (content, topic, amount, threshold) => {
     console.log("Wallet: " + workspace.wallet.value.publicKey)
     console.log("Programid: " + programID)
 
-    // let substr = content.match(/\b(\w)/g); // ['J','S','O','N']
-    // let acronym = matches.join('');
+    let userPosts = await program.value.account.content.all([
+      {
+        memcmp: {
+            offset: 8,
+            bytes: workspace.wallet.value.publicKey.toBase58(),
+        }
+      }
+    ])
 
-    // console.log("slice: " + substr)
+    console.log("users posts: " + userPosts.length)
+
+    let postCounter = userPosts.length
 
     const [contentPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from(anchor.utils.bytes.utf8.encode(content.slice(0,10))), 
+    [new anchor.BN(postCounter).toArrayLike(Buffer, "le", 8), 
       workspace.wallet.value.publicKey.toBuffer()],
       programID
     )
@@ -56,7 +64,7 @@ export const sendPostContent = async (content, topic, amount, threshold) => {
     console.log("cluster: " + clusterUrl)
     console.log(content, topic, amount, threshold)
 
-    await program.value.methods.postV0(content, topic, new anchor.BN(amount * 1000000000), new anchor.BN(threshold))
+    await program.value.methods.postV0(content, topic, new anchor.BN(amount * 1000000000), new anchor.BN(threshold), new anchor.BN(postCounter))
         .accounts({    
             content: contentPDA,
             poster: workspace.wallet.value.publicKey,
@@ -65,6 +73,6 @@ export const sendPostContent = async (content, topic, amount, threshold) => {
         })
         .rpc()
 
-        const content1 = await program.value.account.content.fetch(contentPDA);
-        console.log(content1)
+    const content1 = await program.value.account.content.fetch(contentPDA);
+    console.log(content1)
 }
