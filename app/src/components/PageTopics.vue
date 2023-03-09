@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { paginateposts, topicFilter } from '@/api'
 import { useSlug, useFromRoute } from '@/composables'
-import PostContentForm from '@/components/PostContentForm'
 import PostContentList from '@/components/PostContentList'
 import PostSearch from '@/components/PostSearch'
 
@@ -20,18 +19,18 @@ const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 1
 
 // Actions.
 const search = () => {
-    router.push(`/topics/${slugTopic.value}`)
+    router.push("/topics/" + slugTopic.value)
 }
 
 const fetchTopicposts = () => {
+    console.log("runs")
     if (slugTopic.value === viewedTopic.value) return;
     posts.value = []
     viewedTopic.value = slugTopic.value
     filters.value = [topicFilter(slugTopic.value)]
     prefetch().then(getNextPage)
 }
-
-const addPostContent = postContent => posts.value.push(postContent)
+fetchTopicposts()
 
 // Router hooks.
 useFromRoute((route) => {

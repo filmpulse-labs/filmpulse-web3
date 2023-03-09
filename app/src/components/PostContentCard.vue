@@ -1,14 +1,16 @@
 <script setup>
 import { ref, toRefs, computed } from 'vue'
+import { posterCollect, validatorCollect } from '@/api'
 import { useWorkspace } from '@/composables'
-// import { deletePostContent } from '@/api'
 import GoLongForm from './GoLongForm'
 import GoShortForm from './GoShortForm'
 
-// const emit = defineEmits(['delete']);
 const props = defineProps({
     postContent: Object,
 })
+
+const counter = ref()
+const poster = ref()
 
 const { postContent } = toRefs(props)
 const { wallet } = useWorkspace()
@@ -21,12 +23,27 @@ const authorRoute = computed(() => {
     }
 })
 
+counter.value = postContent.value.postCounter
+poster.value = postContent.value.poster
+
+const collectPoster = async () => {
+    console.log("collection running..." + counter.value)
+    await posterCollect(counter.value)
+}
+
+const collectValidator = async () => {
+    console.log("collection running..." + counter.value)
+    await validatorCollect(poster.value, counter.value)
+}
+
 const mayGoLong = ref(false)
 const mayGoShort = ref(false)
 
 </script>
 
 <template>
+
+
 
     <go-long-form v-if="mayGoLong" :postContent="postContent" @close="mayGoLong = false"></go-long-form>
     <go-short-form v-if="mayGoShort" :postContent="postContent" @close="mayGoShort = false"></go-short-form>
@@ -48,14 +65,14 @@ const mayGoShort = ref(false)
         
         </div>
         <div class="flex flex-wrap items-center justify-between -m-2">
-                <div class="m-2 mr-4">
+            <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
+                #{{ postContent.topic }}
+        </router-link>
+                <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
+                            -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;" class="m-2 mr-4">
                     <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-text="postContent.content">
                     </p>
                 </div>
-
-        <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
-            #{{ postContent.topic }}
-        </router-link>
                 
                 <div class="relative m-2 mr-4">
                     Poster Stake
@@ -66,9 +83,31 @@ const mayGoShort = ref(false)
                     Market Size
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
                 </div>
+                <div class="relative m-2 mr-4">
+                    Long Pool
+                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.longPool"></p>
                 </div>
+                <div class="relative m-2 mr-4">
+                    Short Pool
+                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.shortPool"></p>
+                </div>
+                <div class="relative m-2 mr-4">
+                    Total Pool
+                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.totalPool"></p>
+                </div>
+                <div class="relative m-2 mr-4">
+                    Validator Count
+                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.validatorCount"></p>
+                </div>
+                <div class="relative m-2 mr-4">
+                    Market Open
+                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
+                </div>
+                </div>
+
+                
         
-        <div class="flex" v-if="!isMyPostContent">
+        <div class="flex" v-if="!isMyPostContent && !postContent.validatorThresholdReached">
             <button @click="mayGoLong = true" class="flex px-2 rounded-full text-gray-500 hover:text-blue-800 hover:bg-gray-100" title="Go Long">
                     <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 30px" alt=""/>
             </button>
@@ -76,5 +115,19 @@ const mayGoShort = ref(false)
                 <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 30px" alt="">
             </button>
         </div>
+        
+
     </div>
+
+    <div class="flex">
+            <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="flex px-2 rounded-full text-gray-500 hover:text-blue-800 hover:bg-gray-100" title="Go Long">
+                    Poster Collect
+                  
+            </button>
+            <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full text-gray-500 hover:text-blue-500 hover:bg-gray-100" title="Go Short">
+                Validator Collect
+              
+            </button>
+        </div>
+    
 </template>

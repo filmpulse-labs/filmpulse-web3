@@ -5,7 +5,7 @@ import PostContentList from '@/components/PostContentList'
 import { useWorkspace } from '@/composables'
 
 const posts = ref([])
-const { wallet, program } = useWorkspace()
+const { wallet } = useWorkspace()
 const filters = ref([])
 
 fetchvalidated()

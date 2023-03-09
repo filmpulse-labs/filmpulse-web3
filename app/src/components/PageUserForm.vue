@@ -1,27 +1,11 @@
 <script setup>
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref } from 'vue'
 import { useAutoresizeTextarea } from '@/composables'
 import { createUser, updateUser, fetchUser } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
 import { useAnchorWallet } from 'solana-wallets-vue'
-import { Connection, PublicKey } from '@solana/web3.js'
-import { AnchorProvider, Program } from '@project-serum/anchor'
-import idl from '@/idl/gopulse.json'
 
-const clusterUrl = process.env.VUE_APP_CLUSTER_URL
-const preflightCommitment = 'processed'
-const commitment = 'processed'
-const programID = new PublicKey(idl.metadata.address)
 const wallet = useAnchorWallet()
-const connection = new Connection(clusterUrl, commitment)
-const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
-const program = computed(() => new Program(idl, programID, provider.value))
-
-// Props.
-const props = defineProps({
-    forcedTopic: String,
-})
-const { forcedTopic } = toRefs(props)
 
 // Form data.
 const name = ref('')
@@ -57,7 +41,6 @@ fetchUser(wallet.value.publicKey).then(res => {
 })
 
 // Actions.
-const emit = defineEmits(['added'])
 const setProfile = async () => {
     console.log(name.value, avatar.value)
     await createUser(name.value, avatar.value)
