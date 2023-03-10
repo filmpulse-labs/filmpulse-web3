@@ -11,7 +11,6 @@ const clusterUrl = process.env.VUE_APP_CLUSTER_URL
 const preflightCommitment = 'processed'
 const commitment = 'processed'
 const programID = new PublicKey(idl.metadata.address)
-console.log("ProgramID: " + programID)
 let workspace = null
 
 export const validateContent = async (content, amount, position) => {

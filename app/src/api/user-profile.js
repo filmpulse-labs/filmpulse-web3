@@ -24,10 +24,7 @@ export const createUser = async (name, avatar) => {
         provider,
         program,
     }
-
-    console.log(wallet.value.publicKey)
-    console.log(workspace.wallet.value.publicKey)
-     
+    
     const [profilePDA] = await anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from(anchor.utils.bytes.utf8.encode("profile")), 
         workspace.wallet.value.publicKey.toBuffer()],
@@ -85,7 +82,7 @@ export const updateUser = async (name, avatar) => {
     console.log(userstate)
 }
 
-export const fetchUser = (userKey) => {
+export const fetchUser = async (key) => {
  
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)
@@ -99,11 +96,11 @@ export const fetchUser = (userKey) => {
         program,
     }
 
-    console.log("userkey: " + userKey)
+    console.log(workspace.wallet.value.publicKey)
 
     const [profilePDA] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from(anchor.utils.bytes.utf8.encode("profile")), 
-        userKey.toBuffer()],
+        key.toBuffer()],
         programID
     )
 

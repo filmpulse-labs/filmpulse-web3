@@ -1,14 +1,22 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { paginateposts } from '@/api'
 import PostContentList from '@/components/PostContentList'
+import { useWorkspace } from '@/composables'
 
 const posts = ref([])
+const { wallet } = useWorkspace()
+console.log(wallet.value)
+const filters = ref([])
 
 const onNewPage = newposts => posts.value.push(...newposts)
-const { prefetch, hasNextPage, getNextPage, loading } = paginateposts([], 10, onNewPage)
-prefetch().then(getNextPage)
+const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 10, onNewPage)
 
+watchEffect(() => {
+    if (! wallet.value) return
+    posts.value = []
+    prefetch().then(getNextPage)
+})
 </script>
 
 <template>

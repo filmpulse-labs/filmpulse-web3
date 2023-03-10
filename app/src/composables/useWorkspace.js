@@ -24,7 +24,7 @@ export const initWorkspace = () => {
         provider,
         program,
     }
-    console.log("Useworkspace: " + workspace);
+
 }
 
   
