@@ -74,32 +74,32 @@ const mayGoShort = ref(false)
                     </p>
                 </div>
                 
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Poster Stake
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.amount"></p>
                 </div>
                 
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Market Size
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
                 </div>
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Long Pool
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.longPool"></p>
                 </div>
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Short Pool
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.shortPool"></p>
                 </div>
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Total Pool
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.totalPool"></p>
                 </div>
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Validator Count
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.validatorCount"></p>
                 </div>
-                <div class="relative m-2 mr-4">
+                <div class="m-2 mr-4">
                     Market Open
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
                 </div>

@@ -6,11 +6,10 @@ import { useWorkspace } from '@/composables'
 
 const posts = ref([])
 const { wallet } = useWorkspace()
-console.log(wallet.value)
 const filters = ref([])
 
 const onNewPage = newposts => posts.value.push(...newposts)
-const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 10, onNewPage)
+const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 20, onNewPage)
 
 watchEffect(() => {
     if (! wallet.value) return
