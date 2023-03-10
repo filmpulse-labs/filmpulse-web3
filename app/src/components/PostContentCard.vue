@@ -103,30 +103,31 @@ const mayGoShort = ref(false)
                     Market Open
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
                 </div>
+                
                 </div>
 
-                
-        
-        <div class="flex" v-if="!isMyPostContent && !postContent.validatorThresholdReached">
-            <button @click="mayGoLong = true" class="flex px-2 rounded-full text-gray-500 hover:text-blue-800 hover:bg-gray-100" title="Go Long">
-                    <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 30px" alt=""/>
-            </button>
-            <button @click="mayGoShort = true" class="flex px-2 rounded-full text-gray-500 hover:text-blue-500 hover:bg-gray-100" title="Go Short">
-                <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 30px" alt="">
-            </button>
-        </div>
-        
 
     </div>
 
+
+    <div class="flex" v-if="!isMyPostContent && !postContent.validatorThresholdReached">
+                    
+           
+                    <button @click="mayGoLong = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Long">
+                            <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 50px" alt=""/>
+                    </button>
+                    <button @click="mayGoShort = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Short">
+                        <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 50px" alt="">
+                    </button>
+             
+                </div>
+
     <div class="flex">
-            <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="flex px-2 rounded-full text-gray-500 hover:text-blue-800 hover:bg-gray-100" title="Go Long">
-                    Poster Collect
-                  
+            <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="text-center flex px-2 rounded-full hover:bg-blue-800" title="Go Long">
+                <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
             </button>
-            <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full text-gray-500 hover:text-blue-500 hover:bg-gray-100" title="Go Short">
-                Validator Collect
-              
+            <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Short">
+                <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
             </button>
         </div>
     

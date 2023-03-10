@@ -11,9 +11,9 @@ export class PostContent
         this.amount = accountData.amount/1000000000
         this.threshold = accountData.validatorThreshold
         this.postCounter = accountData.postCounter
-        this.totalPool = accountData.totalPool
-        this.shortPool = accountData.shortPool
-        this.longPool = accountData.longPool
+        this.totalPool = accountData.totalPool/1000000000
+        this.shortPool = accountData.shortPool/1000000000
+        this.longPool = accountData.longPool/1000000000
         this.shortWin = accountData.shortWin
         this.validatorCount = accountData.validatorCount
         this.validatorThresholdReached = accountData.validatorThresholdReached
