@@ -76,7 +76,7 @@ const send = async () => {
             </div>
             <div class="relative m-2 mr-4">
                 <input
-                    type="float"
+                    type="number"
                     placeholder="SOL"
                     class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     @input="amount = $event.target.value"

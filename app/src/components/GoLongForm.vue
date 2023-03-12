@@ -38,7 +38,7 @@ const validate = async () => {
 
 <template>
     <div v-if="connected">
-        <div class="px-8 py-4 border-l-4 border-pink-500">
+        <div class="px-8 py-4 border-l-4 border-blue-800">
             <div class="py-1">
                 <h3 class="inline font-semibold" :title="postContent.author">
                     <router-link :to="{ name: 'Profile' }" class="hover:underline">
@@ -54,9 +54,6 @@ const validate = async () => {
             </div>
             
             <!-- Content field. -->
-
-            
-
             <div class="flex flex-wrap items-center justify-between -m-2">
                 <div class="relative m-2 mr-4">
                     <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.content"></p>
@@ -71,52 +68,33 @@ const validate = async () => {
                         </svg>
                     </div>
                 </div>
-                
-                <div class="relative m-2 mr-4">
-                    Poster Stake
-                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.amount"></p>
-                </div>
-                
-                <div class="relative m-2 mr-4">
-                    Market Size
-                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
-                </div>
-
                 <div class="relative m-2 mr-4">
                 <input
-                    type="float"
+                    type="number"
                     placeholder="SOL"
                     class="text-blue-800 rounded-full pl-3 pr-4 py-2 bg-gray-500"
                     @input="amount = $event.target.value"
                 >
-                <div class="absolute left-0 inset-y-0 flex pl-3 pr-2">
-                
-                </div>
             </div>
-                
+            <div class="flex items-center space-x-4 m-2 ml-auto">
 
-            
-                <div class="flex items-center space-x-4 m-2 ml-auto">
+                <!-- Close button. -->
+                <button
+                    class="text-gray-500 px-4 py-2 rounded-full border bg-white hover:bg-gray-50"
+                    @click="emit('close')"
+                >
+                    Cancel
+                </button>
 
-                
-
-                    <!-- Close button. -->
-                    <button
-                        class="text-gray-500 px-4 py-2 rounded-full border bg-white hover:bg-gray-50"
-                        @click="emit('close')"
-                    >
-                        Cancel
-                    </button>
-
-                    <!-- PostContent button. -->
-                    <button
-                        class="text-white px-4 py-2 rounded-full bg-blue-800 font-semibold" :disabled="! canPostContent"
-                        :class="canPostContent ? 'bg-blue' : 'bg-blue-800 cursor-not-allowed'"
-                        @click="validate"
-                    >
-                        Go Long
-                    </button>
-                </div>
+                <!-- PostContent button. -->
+                <button
+                    class="text-white px-4 py-2 rounded-full bg-blue-800 font-semibold" :disabled="! canPostContent"
+                    :class="canPostContent ? 'bg-blue' : 'bg-blue-800 cursor-not-allowed'"
+                    @click="validate"
+                >
+                    Go Long
+                </button>
+            </div>
             </div>
         </div>
     </div>

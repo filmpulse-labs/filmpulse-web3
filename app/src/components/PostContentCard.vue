@@ -46,7 +46,7 @@ const mayGoShort = ref(false)
     <go-long-form v-if="mayGoLong" :postContent="postContent" @close="mayGoLong = false"></go-long-form>
     <go-short-form v-if="mayGoShort" :postContent="postContent" @close="mayGoShort = false"></go-short-form>
     
-    <div class="px-8 py-4" v-else>
+    <div class="px-8 py-4" v-else-if="!mayGoLong">
         <div class="flex justify-between">
             <div class="py-1">
                 <h3 class="inline font-semibold" :title="postContent.author">
@@ -112,10 +112,10 @@ const mayGoShort = ref(false)
             </button>
         </div>
         <div style="display: flex; justify-content: center;" class="flex">
-            <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="text-center flex px-2 rounded-full hover:bg-blue-800" title="Go Long">
+            <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="text-center flex px-2 rounded-full hover:bg-blue-800" title="Poster Collect">
                 <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
             </button>
-            <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Short">
+            <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full hover:bg-blue-800" title="Validator Collect">
                 <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
             </button>
         </div>
