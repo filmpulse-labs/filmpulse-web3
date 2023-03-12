@@ -32,12 +32,10 @@ const canPostContent = computed(() => name.value && avatar.value)
 
 fetchUser(wallet.value.publicKey).then(res => {
     profileExists.value = true
-    console.log(profileExists.value)
     username.value = res.name
     useravatar.value = res.avatar
 }).catch(() => {
     profileExists.value = false
-    console.log(profileExists.value)
 })
 
 // Actions.

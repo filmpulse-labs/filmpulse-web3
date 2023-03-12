@@ -96,8 +96,6 @@ export const fetchUser = async (key) => {
         program,
     }
 
-    console.log(workspace.wallet.value.publicKey)
-
     const [profilePDA] = anchor.web3.PublicKey.findProgramAddressSync(
         [Buffer.from(anchor.utils.bytes.utf8.encode("profile")), 
         key.toBuffer()],

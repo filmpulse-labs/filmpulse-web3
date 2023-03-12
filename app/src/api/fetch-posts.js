@@ -25,7 +25,7 @@ export const fetchposts = async (filters = []) => {
     return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
 }
 
-export const fetchvalidated = async (filters = []) => {
+export const fetchvalidatedposts = async (filters = []) => {
     const clusterUrl = process.env.VUE_APP_CLUSTER_URL
     const preflightCommitment = 'processed'
     const commitment = 'processed'
@@ -55,9 +55,7 @@ export const fetchvalidated = async (filters = []) => {
     }
 
     const posts = await program.value.account.content.fetchMultiple(postsArr)
-    console.log(posts)
-    
-    //return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
+    return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
 }
 
 export const paginateposts = (filters = [], perPage = 20, onNewPage = () => {}) => {

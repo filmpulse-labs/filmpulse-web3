@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
-import { fetchvalidated, paginateposts } from '@/api'
+import { fetchvalidatedposts, paginateposts } from '@/api'
 import PostContentList from '@/components/PostContentList'
 import { useWorkspace } from '@/composables'
 
@@ -8,7 +8,7 @@ const posts = ref([])
 const { wallet } = useWorkspace()
 const filters = ref([])
 
-fetchvalidated()
+fetchvalidatedposts()
 
 const onNewPage = newposts => posts.value.push(...newposts)
 const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 20, onNewPage)
@@ -16,9 +16,9 @@ const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 2
 watchEffect(() => {
     if (! wallet.value) return
     posts.value = []
-    // filters.value = [authorFilter(wallet.value.publicKey.toBase58())]
     prefetch().then(getNextPage)
 })
+console.log(posts.value.values())
 </script>
 
 <template>

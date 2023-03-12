@@ -8,7 +8,6 @@ import { useWorkspace } from '@/composables'
 
 const posts = ref([])
 const { wallet } = useWorkspace()
-console.log(wallet.value)
 const filters = ref([])
 let update = ref(false)
 let username = ref()
