@@ -25,12 +25,12 @@ const characterLimit = useCountCharacterLimit(content, 280)
 
 // Permissions.
 const { connected } = useWallet()
-const canPostContent = computed(() => content.value && characterLimit.value > 0)
+// const canPostContent = computed(() => content.value && characterLimit.value > 0)
 
 // Actions.
 const emit = defineEmits(['close'])
 const validate = async () => {
-    if (! canPostContent.value) return
+    // if (! canPostContent.value) return
     await validateContent(postContent.value, amount.value, "long")
     emit('close')
 }
@@ -88,8 +88,7 @@ const validate = async () => {
 
                 <!-- PostContent button. -->
                 <button
-                    class="text-white px-4 py-2 rounded-full bg-blue-800 font-semibold" :disabled="! canPostContent"
-                    :class="canPostContent ? 'bg-blue' : 'bg-blue-800 cursor-not-allowed'"
+                    class="text-white px-4 py-2 rounded-full bg-blue-800 font-semibold" 
                     @click="validate"
                 >
                     Go Long
