@@ -2,8 +2,6 @@
 import { ref, toRefs, computed } from 'vue'
 import { posterCollect, validatorCollect } from '@/api'
 import { useWorkspace } from '@/composables'
-import GoLongForm from './GoLongForm'
-import GoShortForm from './GoShortForm'
 
 const props = defineProps({
     postContent: Object,
@@ -36,17 +34,10 @@ const collectValidator = async () => {
     await validatorCollect(poster.value, counter.value)
 }
 
-const mayGoLong = ref(false)
-const mayGoShort = ref(false)
-
 </script>
 
-<template>
-
-    <go-long-form v-if="mayGoLong" :postContent="postContent" @close="mayGoLong = false"></go-long-form>
-    <go-short-form v-if="mayGoShort" :postContent="postContent" @close="mayGoShort = false"></go-short-form>
-    
-    <div class="px-8 py-4" v-else-if="!mayGoLong">
+<template>    
+    <div class="px-8 py-4" v-if="postContent.validatorThresholdReached">
         <div class="flex justify-between">
             <div class="py-1">
                 <h3 class="inline font-semibold" :title="postContent.author">
@@ -102,14 +93,6 @@ const mayGoShort = ref(false)
                 Market Open
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
             </div>
-        </div>
-        <div style="display: flex; justify-content: center;" class="flex" v-if="!isMyPostContent && !postContent.validatorThresholdReached">
-            <button @click="mayGoLong = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Long">
-                    <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 50px" alt=""/>
-            </button>
-            <button @click="mayGoShort = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Short">
-                <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 50px" alt="">
-            </button>
         </div>
         <div style="display: flex; justify-content: center;" class="flex">
             <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="text-center flex px-2 rounded-full hover:bg-blue-800" title="Poster Collect">

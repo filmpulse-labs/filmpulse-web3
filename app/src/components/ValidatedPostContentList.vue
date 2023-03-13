@@ -1,6 +1,6 @@
 <script setup>
 import { computed, toRefs } from 'vue'
-import PostContentCard from '@/components/PostContentCard'
+import PostContentCard from '@/components/ValidatedPostContentCard'
 
 const emit = defineEmits(['update:posts', 'more'])
 const props = defineProps({

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
 import { fetchvalidatedposts, paginateposts } from '@/api'
-import PostContentList from '@/components/PostContentList'
+import PostContentList from '@/components/ValidatedPostContentList'
 import { useWorkspace } from '@/composables'
 
 const posts = ref([])
@@ -18,12 +18,9 @@ watchEffect(() => {
     posts.value = []
     prefetch().then(getNextPage)
 })
-console.log(posts.value.values())
+
 </script>
 
 <template>
-    <div v-if="wallet" class="border-b px-8 py-4 bg-gray-500 break-all">
-        {{ wallet.publicKey.toBase58() }}
-    </div>
     <postContent-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></postContent-list>
 </template>

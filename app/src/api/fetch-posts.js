@@ -55,7 +55,7 @@ export const fetchvalidatedposts = async (filters = []) => {
     }
 
     const posts = await program.value.account.content.fetchMultiple(postsArr)
-    return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
+    // return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
 }
 
 export const paginateposts = (filters = [], perPage = 20, onNewPage = () => {}) => {
