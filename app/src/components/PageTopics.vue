@@ -23,7 +23,6 @@ const search = () => {
 }
 
 const fetchTopicposts = () => {
-    console.log("runs")
     if (slugTopic.value === viewedTopic.value) return;
     posts.value = []
     viewedTopic.value = slugTopic.value

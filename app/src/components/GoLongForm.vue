@@ -55,19 +55,14 @@ const validate = async () => {
             
             <!-- Content field. -->
             <div class="flex flex-wrap items-center justify-between -m-2">
-                <div class="relative m-2 mr-4">
-                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.content"></p>
-                </div>
-
-                  <!-- Topic field. -->
-                  <div class="relative m-2 mr-4">
-                    <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.topic"></p>
-                    <div class="absolute left-0 inset-y-0 flex pl-3 pr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-auto" :class="slugTopic ? 'text-blue-800' : 'text-gray-400'" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9.243 3.03a1 1 0 01.727 1.213L9.53 6h2.94l.56-2.243a1 1 0 111.94.486L14.53 6H17a1 1 0 110 2h-2.97l-1 4H15a1 1 0 110 2h-2.47l-.56 2.242a1 1 0 11-1.94-.485L10.47 14H7.53l-.56 2.242a1 1 0 11-1.94-.485L5.47 14H3a1 1 0 110-2h2.97l1-4H5a1 1 0 110-2h2.47l.56-2.243a1 1 0 011.213-.727zM9.03 8l-1 4h2.938l1-4H9.031z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                </div>
+            <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
+                #{{ postContent.topic }}
+            </router-link>
+            <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
+                        -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;" class="m-2 mr-4">
+                <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-text="postContent.content">
+                </p>
+            </div>
                 <div class="relative m-2 mr-4">
                 <input
                     type="number"
