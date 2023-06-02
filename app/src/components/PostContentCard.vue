@@ -1,9 +1,10 @@
 <script setup>
-import { ref, toRefs, computed } from 'vue'
-import { posterCollect, validatorCollect } from '@/api'
+import { ref, toRefs, computed, onMounted } from 'vue'
+import { fetchUser, posterCollect, validatorCollect } from '@/api'
 import { useWorkspace } from '@/composables'
 import GoLongForm from './GoLongForm'
 import GoShortForm from './GoShortForm'
+import { PublicKey } from '@solana/web3.js'
 
 const props = defineProps({
     postContent: Object,
@@ -11,6 +12,8 @@ const props = defineProps({
 
 const counter = ref()
 const poster = ref()
+const useravatar = ref()
+const username = ref()
 
 const { postContent } = toRefs(props)
 const { wallet } = useWorkspace()
@@ -39,21 +42,40 @@ const collectValidator = async () => {
 const mayGoLong = ref(false)
 const mayGoShort = ref(false)
 
+onMounted(async () => {
+    try {
+        const publicKey = new PublicKey(postContent.value.poster.toBase58())
+        const user = await fetchUser(publicKey)
+        useravatar.value = user.avatar
+        username.value = user.name
+    } catch (error) {
+        console.log(error)
+    }
+})
 </script>
 
 <template>
-
     <go-long-form v-if="mayGoLong" :postContent="postContent" @close="mayGoLong = false"></go-long-form>
     <go-short-form v-if="mayGoShort" :postContent="postContent" @close="mayGoShort = false"></go-short-form>
-    
+
     <div class="px-8 py-4" v-else-if="!mayGoLong">
         <div class="flex justify-between">
             <div class="py-1">
-                <h3 class="inline font-semibold" :title="postContent.author">
-                    <router-link :to="authorRoute" class="hover:underline">
-                        {{ postContent.author_display }}
-                    </router-link>
-                </h3>
+                <router-link :to="authorRoute" class="hover:underline">
+
+                <div class="flex items-center">
+                    <img style="border-radius: 50%; max-height: 50px; max-width: 50px; margin-right: 16px; object-fit: cover; aspect-ratio: 1/1;" :src="useravatar" alt="User Avatar">
+                    <h1 class="inline font-semibold text-lg" :title="username">
+                    
+                            {{ username }}
+                      
+                    </h1>
+                </div>
+                    <h3 class="inline font-semibold" :title="postContent.author">
+                            {{ postContent.author_display }}
+                        
+                    </h3>
+                </router-link>
                 <span class="text-gray-500"> • </span>
                 <time class="text-gray-500 text-sm" :title="postContent.created_at">
                     <router-link :to="{ name: 'PostContent', params: { postContent: postContent.publicKey.toBase58() } }" class="hover:underline">
@@ -61,8 +83,9 @@ const mayGoShort = ref(false)
                     </router-link>
                 </time>
             </div>
-        
         </div>
+      
+
         <div class="flex flex-wrap items-center justify-between -m-2">
             <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
                 #{{ postContent.topic }}

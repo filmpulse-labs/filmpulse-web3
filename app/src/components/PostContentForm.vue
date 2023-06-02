@@ -66,7 +66,7 @@ const send = async () => {
             <div class="relative m-2 mr-4">
                 <input
                     type="text"
-                    placeholder="Topic"
+                    placeholder="Market Prompt"
                     class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     :value="effectiveTopic"
                     :disabled="forcedTopic"
@@ -92,6 +92,26 @@ const send = async () => {
                 >
         
             </div>
+
+            <div>
+    <!-- <label for="title">Title:</label>
+    <input id="title" type="text" v-model="feed.title" />
+    <br />
+
+    <label for="homePageUrl">Home Page URL:</label>
+    <input id="homePageUrl" type="text" v-model="feed.home_page_url" />
+    <br />
+
+    <label for="feedUrl">Feed URL:</label>
+    <input id="feedUrl" type="text" v-model="feed.feed_url" />
+    <br />
+
+    <label for="description">Description:</label>
+    <textarea id="description" v-model="feed.description"></textarea>
+    <br /> -->
+
+    <button @click="uploadToArweave">Upload to Arweave</button>
+  </div>
             <div class="flex items-center space-x-6 m-2 ml-auto">
 
                 <!-- Character limit. -->

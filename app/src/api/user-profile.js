@@ -82,7 +82,7 @@ export const updateUser = async (name, avatar) => {
     console.log(userstate)
 }
 
-export const fetchUser = async (key) => {
+export const fetchUser = async (key) => { 
  
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)

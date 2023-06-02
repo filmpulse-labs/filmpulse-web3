@@ -22,7 +22,7 @@ const onNewPage = newposts => posts.value.push(...newposts)
 const { prefetch, hasNextPage, getNextPage, loading } = paginateposts(filters, 10, onNewPage)
 
 watchEffect(() => {
-    if (! wallet.value) return
+    if (! wallet.value) return 
     posts.value = []
     filters.value = [authorFilter(wallet.value.publicKey.toBase58())]
     prefetch().then(getNextPage)
@@ -37,13 +37,18 @@ function toggleSettings() {
 </script>
 
 <template>
-    <div v-if="wallet" class="border-b px-8 py-4 bg-gray-500 break-all">
-        <span>
-            <img style="border-radius: 50%; max-height: 100px; max-width: 100px" v-bind:src=this.useravatar>
-            <h1 style="font-size: 24px;">{{ this.username }}</h1>
-        </span>
+    <div v-if="wallet" class="border-b px-8 py-4 bg-gray-500 break-all" style="display: flex; align-items: center;">
+        
+
+        <img style="border-radius: 50%; max-height: 100px; max-width: 100px; margin-right: 16px; object-fit: cover; aspect-ratio: 1/1;" :src="useravatar" alt="User Avatar">        
+
+    <div>
+        <h1 style="font-size: 24px; margin-bottom: 8px;">{{ username }}</h1>
         <h5 style="font-size: 14px;">{{ wallet.publicKey.toBase58() }}</h5>
-        <div class="flex items-center space-x-6 m-2 ml-auto">
+    </div>
+</div>
+
+        <div class="border-b px-8 py-4 bg-gray-500 break-all flex items-center space-x-6 m-2 ml-auto">
     <button
         class="text-white bg-blue-800 px-4 py-2 rounded-full font-semibold"
         @click="toggleSettings"
@@ -51,7 +56,7 @@ function toggleSettings() {
         Settings
     </button>
     </div>
-    </div>
+    
     <pageUser-form v-if="update"></pageUser-form>
     <postContent-form @added="addPostContent"></postContent-form>
     <postContent-list v-model:posts="posts" :loading="loading" :has-more="hasNextPage" @more="getNextPage"></postContent-list>
