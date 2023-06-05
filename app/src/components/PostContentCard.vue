@@ -105,22 +105,22 @@ onMounted(async () => {
                 Market Size
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
             </div>
-            <div class="m-2 mr-4">
+            <!-- <div class="m-2 mr-4">
                 Long Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.longPool"></p>
             </div>
             <div class="m-2 mr-4">
                 Short Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.shortPool"></p>
-            </div>
+            </div> -->
             <div class="m-2 mr-4">
                 Total Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.totalPool"></p>
             </div>
-            <div class="m-2 mr-4">
+            <!-- <div class="m-2 mr-4">
                 Validator Count
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.validatorCount"></p>
-            </div>
+            </div> -->
             <div class="m-2 mr-4">
                 Market Open
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
@@ -128,7 +128,7 @@ onMounted(async () => {
         </div>
         <div style="display: flex; justify-content: center;" class="flex" v-if="!isMyPostContent && !postContent.validatorThresholdReached">
             <button @click="mayGoLong = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Long">
-                    <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 50px" alt=""/>
+                <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 50px; transform: scaleX(-1);" alt=""/>
             </button>
             <button @click="mayGoShort = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Short">
                 <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 50px" alt="">
