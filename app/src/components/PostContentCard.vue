@@ -140,7 +140,7 @@ onMounted(async () => {
             </button>
             <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full hover:bg-blue-800" title="Validator Collect">
                 <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
-            </button>
+            </button> 
         </div>
     </div>    
 </template>

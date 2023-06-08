@@ -1,7 +1,8 @@
 <script setup>
-import { ref, toRefs, computed } from 'vue'
-import { posterCollect, validatorCollect } from '@/api'
+import { ref, toRefs, computed, onMounted } from 'vue'
+import { fetchUser, posterCollect, validatorCollect } from '@/api'
 import { useWorkspace } from '@/composables'
+import { PublicKey } from '@solana/web3.js'
 
 const props = defineProps({
     postContent: Object,
@@ -9,6 +10,8 @@ const props = defineProps({
 
 const counter = ref()
 const poster = ref()
+const useravatar = ref()
+const username = ref()
 
 const { postContent } = toRefs(props)
 const { wallet } = useWorkspace()
@@ -34,17 +37,38 @@ const collectValidator = async () => {
     await validatorCollect(poster.value, counter.value)
 }
 
+onMounted(async () => {
+    try {
+        const publicKey = new PublicKey(postContent.value.poster.toBase58())
+        const user = await fetchUser(publicKey)
+        useravatar.value = user.avatar
+        username.value = user.name
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 </script>
 
 <template>    
     <div class="px-8 py-4" v-if="postContent.validatorThresholdReached">
         <div class="flex justify-between">
             <div class="py-1">
-                <h3 class="inline font-semibold" :title="postContent.author">
-                    <router-link :to="authorRoute" class="hover:underline">
-                        {{ postContent.author_display }}
-                    </router-link>
-                </h3>
+                <router-link :to="authorRoute" class="hover:underline">
+
+                <div class="flex items-center">
+                    <img style="border-radius: 50%; max-height: 50px; max-width: 50px; margin-right: 16px; object-fit: cover; aspect-ratio: 1/1;" :src="useravatar" alt="User Avatar">
+                    <h1 class="inline font-semibold text-lg" :title="username">
+                    
+                            {{ username }}
+                      
+                    </h1>
+                </div>
+                    <h3 class="inline font-semibold" :title="postContent.author">
+                            {{ postContent.author_display }}
+                        
+                    </h3>
+                </router-link>
                 <span class="text-gray-500"> • </span>
                 <time class="text-gray-500 text-sm" :title="postContent.created_at">
                     <router-link :to="{ name: 'PostContent', params: { postContent: postContent.publicKey.toBase58() } }" class="hover:underline">
@@ -52,7 +76,6 @@ const collectValidator = async () => {
                     </router-link>
                 </time>
             </div>
-        
         </div>
         <div class="flex flex-wrap items-center justify-between -m-2">
             <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
@@ -73,22 +96,22 @@ const collectValidator = async () => {
                 Market Size
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
             </div>
-            <div class="m-2 mr-4">
+            <!-- <div class="m-2 mr-4">
                 Long Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.longPool"></p>
             </div>
             <div class="m-2 mr-4">
                 Short Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.shortPool"></p>
-            </div>
+            </div> -->
             <div class="m-2 mr-4">
                 Total Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.totalPool"></p>
             </div>
-            <div class="m-2 mr-4">
+            <!-- <div class="m-2 mr-4">
                 Validator Count
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.validatorCount"></p>
-            </div>
+            </div> -->
             <div class="m-2 mr-4">
                 Market Open
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
