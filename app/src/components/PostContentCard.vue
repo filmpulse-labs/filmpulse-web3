@@ -96,12 +96,12 @@ onMounted(async () => {
                 </p>
             </div>
             
-            <div class="m-2 mr-4">
+            <div class="m-2 mr-4" style="transform: scale(0.75);">
                 Poster Stake
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.amount"></p>
             </div>
             
-            <div class="m-2 mr-4">
+            <div class="m-2 mr-4" style="transform: scale(0.75);">
                 Market Size
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
             </div>
@@ -113,7 +113,7 @@ onMounted(async () => {
                 Short Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.shortPool"></p>
             </div> -->
-            <div class="m-2 mr-4">
+            <div class="m-2 mr-4" style="transform: scale(0.75);">
                 Total Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.totalPool"></p>
             </div>
@@ -121,25 +121,26 @@ onMounted(async () => {
                 Validator Count
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.validatorCount"></p>
             </div> -->
-            <div class="m-2 mr-4">
+            <div class="m-2 mr-4" style="transform: scale(0.75);">
                 Market Open
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
             </div>
         </div>
         <div style="display: flex; justify-content: center;" class="flex" v-if="!isMyPostContent && !postContent.validatorThresholdReached">
             <button @click="mayGoLong = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Long">
-                <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 50px; transform: scaleX(-1);" alt=""/>
+                <img src="https://static.thenounproject.com/png/58345-200.png" style="max-width: 50px; transform: scaleX(-1); filter: invert(50%);" alt=""/>
             </button>
             <button @click="mayGoShort = true" class="flex px-2 rounded-full hover:bg-blue-800" title="Go Short">
-                <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 50px" alt="">
+                <img src="https://cdn-icons-png.flaticon.com/512/26/26103.png" style="max-width: 50px; filter: invert(50%);" alt=""/>
             </button>
+
         </div>
         <div style="display: flex; justify-content: center;" class="flex">
             <button v-if="postContent.validatorThresholdReached && isMyPostContent" @click="collectPoster" class="text-center flex px-2 rounded-full hover:bg-blue-800" title="Poster Collect">
-                <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
+                <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px; filter: invert(50%);" alt="">
             </button>
             <button v-if="postContent.validatorThresholdReached && !isMyPostContent" @click="collectValidator" class="flex px-2 rounded-full hover:bg-blue-800" title="Validator Collect">
-                <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px" alt="">
+                <img src="https://static.thenounproject.com/png/3249399-200.png" style="max-width: 50px; filter: invert(50%);" alt="">
             </button> 
         </div>
     </div>    
