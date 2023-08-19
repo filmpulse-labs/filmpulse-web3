@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref, toRefs } from 'vue'
-import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
+import { ref, toRefs } from 'vue'
+import { useAutoresizeTextarea } from '@/composables'
 import { validateContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
 
@@ -11,17 +11,11 @@ const props = defineProps({
 const { postContent } = toRefs(props)
 
 // Form data.
-const content = ref(postContent.value.content)
-const topic = ref(postContent.value.topic)
 const amount = ref()
-const slugTopic = useSlug(topic)
 
 // Auto-resize the content's textarea.
 const textarea = ref()
 useAutoresizeTextarea(textarea)
-
-// Character limit / count-down.
-const characterLimit = useCountCharacterLimit(content, 280)
 
 // Permissions.
 const { connected } = useWallet()

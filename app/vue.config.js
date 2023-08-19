@@ -17,13 +17,13 @@ module.exports = defineConfig({
         ],
         resolve: {
             fallback: {
-                crypto: false,
+                crypto: require.resolve("crypto-browserify"),
                 fs: false,
                 assert: false,
                 process: false,
                 util: false,
                 path: false,
-                stream: false,
+                stream: require.resolve("stream-browserify"),
             }
         }
     }

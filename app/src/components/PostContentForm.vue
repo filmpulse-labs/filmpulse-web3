@@ -3,6 +3,7 @@ import { computed, ref, toRefs } from 'vue'
 import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
 import { sendPostContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
+import Bundlr from "@bundlr-network/client";
 
 // Props.
 const props = defineProps({
@@ -11,9 +12,11 @@ const props = defineProps({
 const { forcedTopic } = toRefs(props)
 
 // Form data.
+const arweaveLink = ref(''); // Added ref for Arweave link
 const content = ref('')
 const topic = ref('')
 const amount = ref()
+const activeTab = ref('form1');
 const threshold = ref()
 const slugTopic = useSlug(topic)
 const effectiveTopic = computed(() => forcedTopic.value ?? slugTopic.value)
@@ -46,11 +49,95 @@ const send = async () => {
     threshold.value = ''
 }
 
+const uploadViaBundlr = async (file) => {
+    try {
+
+        let wallet = useWallet()
+
+        const bundlr = new Bundlr("https://devnet.bundlr.network", "solana", wallet.wallet.value, {
+            providerUrl: "https://api.devnet.solana.com",
+        });
+
+        await bundlr.ready();
+        
+        // Print your wallet address
+        console.log(`wallet address = ${bundlr.address}`);
+
+        const price = await bundlr.getPrice(file.size);
+        console.log(price)
+
+        await bundlr.fund(price);
+
+        const dataToUpload = "GM world.";
+
+        const response = await bundlr.upload(dataToUpload);
+        
+        arweaveLink.value = "https://arweave.net/" + response.id;
+
+        console.log(`Data Available at => https://arweave.net/${response.id}`);
+	
+    } catch (error) {
+        console.error('Error uploading via Bundlr:', error);
+        // Handle error as needed
+    }
+}
+
+// Function to handle image upload
+const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        await uploadViaBundlr(file);
+        // Fill the content field with the Arweave link
+        content.value = arweaveLink.value;
+    }
+}
 </script>
 
 <template>
     <div v-if="connected" class="px-8 py-4 border-b">
+        <div>
+            <div class="tabs">
 
+                <button
+                    class="tab"
+                    :class="{ active: activeTab === 'form1' }"
+                    @click="activeTab = 'form1'"
+                >
+                    Micro
+                </button>
+                <button
+                    class="tab"
+                    :class="{ active: activeTab === 'form2' }"
+                    @click="activeTab = 'form2'"
+                >
+                    Blog
+                </button>
+                <button
+                    class="tab"
+                    :class="{ active: activeTab === 'form3' }"
+                    @click="activeTab = 'form3'"
+                >
+                    Image
+                </button>
+                <button
+                    class="tab"
+                    :class="{ active: activeTab === 'form4' }"
+                    @click="activeTab = 'form4'"
+                >
+                    Audio
+                </button>
+                <button
+                    class="tab"
+                    :class="{ active: activeTab === 'form5' }"
+                    @click="activeTab = 'form5'"
+                >
+                    Video
+                </button>
+            </div>
+
+    <div v-if="activeTab === 'form1'">
+        <br>
+        
         <!-- Content field. -->
         <textarea
             ref="textarea"
@@ -72,7 +159,7 @@ const send = async () => {
                     :disabled="forcedTopic"
                     @input="topic = $event.target.value"
                 >
-               
+            
             </div>
             <div class="relative m-2 mr-4">
                 <input
@@ -93,25 +180,6 @@ const send = async () => {
         
             </div>
 
-            <div>
-    <!-- <label for="title">Title:</label>
-    <input id="title" type="text" v-model="feed.title" />
-    <br />
-
-    <label for="homePageUrl">Home Page URL:</label>
-    <input id="homePageUrl" type="text" v-model="feed.home_page_url" />
-    <br />
-
-    <label for="feedUrl">Feed URL:</label>
-    <input id="feedUrl" type="text" v-model="feed.feed_url" />
-    <br />
-
-    <label for="description">Description:</label>
-    <textarea id="description" v-model="feed.description"></textarea>
-    <br /> -->
-
-    <button @click="uploadToArweave">Upload to Arweave</button>
-  </div>
             <div class="flex items-center space-x-6 m-2 ml-auto">
 
                 <!-- Character limit. -->
@@ -131,7 +199,351 @@ const send = async () => {
         </div>
     </div>
 
+    <div v-else-if="activeTab === 'form2'">
+      <!-- Upload input -->
+      <div class="relative m-2 mr-4">
+        <input
+            id="imageUpload"
+            type="file"
+            accept="text/*"
+            @change="handleImageUpload"
+            class="hidden"
+        >
+        <button
+            class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
+            @click="handleImageUpload"
+        >
+            Upload Text
+        </button>
+    </div>
+
+      <!-- Content field. -->
+    <textarea
+        ref="textarea"
+        rows="1"
+        class="text-xl rounded w-full focus:outline-none pl-5 py-5 resize-none mb-3 bg-gray-500"
+        placeholder="Say something smart or post a link..."
+        v-model="content"
+    ></textarea>
+
+    <div class="flex flex-wrap items-center justify-between -m-2">
+
+        <!-- Topic field. -->
+        <div class="relative m-2 mr-4">
+            <input
+                type="text"
+                placeholder="Market Prompt"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                :value="effectiveTopic"
+                :disabled="forcedTopic"
+                @input="topic = $event.target.value"
+            >
+            
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="SOL"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="amount = $event.target.value"
+            >
+            
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="Market Size"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="threshold = $event.target.value"
+            >
+        
+        </div>
+
+        <div class="flex items-center space-x-6 m-2 ml-auto">
+
+            <!-- Character limit. -->
+            <div :class="characterLimitColour">
+                {{ characterLimit }} left
+            </div>
+
+            <!-- PostContent button. -->
+            <button
+                class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
+                :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
+                @click="send"
+            >
+                Post
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <div v-else-if="activeTab === 'form3'">
+
+            <div class="relative m-2 mr-4">
+  <input
+    id="imageUpload"
+    type="file"
+    accept="image/*"
+    @change="handleImageUpload"
+    class="hidden"
+  >
+  <button
+    class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
+    @click="handleImageUpload"
+  >
+    Upload Image
+  </button>
+</div>
+
+      <!-- Content field. -->
+    <textarea
+        ref="textarea"
+        rows="1"
+        class="text-xl rounded w-full focus:outline-none pl-5 py-5 resize-none mb-3 bg-gray-500"
+        placeholder="Say something smart or post a link..."
+        v-model="content"
+    ></textarea>
+
+    <div class="flex flex-wrap items-center justify-between -m-2">
+
+        <!-- Topic field. -->
+        <div class="relative m-2 mr-4">
+            <input
+                type="text"
+                placeholder="Market Prompt"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                :value="effectiveTopic"
+                :disabled="forcedTopic"
+                @input="topic = $event.target.value"
+            >
+           
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="SOL"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="amount = $event.target.value"
+            >
+            
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="Market Size"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="threshold = $event.target.value"
+            >
+    
+        </div>
+
+
+        <div class="flex items-center space-x-6 m-2 ml-auto">
+
+            <!-- Character limit. -->
+            <div :class="characterLimitColour">
+                {{ characterLimit }} left
+            </div>
+
+            <!-- PostContent button. -->
+            <button
+                class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
+                :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
+                @click="send"
+            >
+                Post
+            </button>
+        </div>
+    </div>
+     
+    </div>
+
+    <div v-else-if="activeTab === 'form4'">
+            <!-- Upload input -->
+            <div class="relative m-2 mr-4">
+  <input
+    id="imageUpload"
+    type="file"
+    accept=".mp3, .wav, .ogg, .mp4, .webm"
+    @change="handleImageUpload"
+    class="hidden"
+  >
+  <button
+    class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
+    @click="handleImageUpload"
+  >
+    Upload Audio
+  </button>
+</div>
+
+      <!-- Content field. -->
+    <textarea
+        ref="textarea"
+        rows="1"
+        class="text-xl rounded w-full focus:outline-none pl-5 py-5 resize-none mb-3 bg-gray-500"
+        placeholder="Say something smart or post a link..."
+        v-model="content"
+    ></textarea>
+
+    <div class="flex flex-wrap items-center justify-between -m-2">
+
+        <!-- Topic field. -->
+        <div class="relative m-2 mr-4">
+            <input
+                type="text"
+                placeholder="Market Prompt"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                :value="effectiveTopic"
+                :disabled="forcedTopic"
+                @input="topic = $event.target.value"
+            >
+           
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="SOL"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="amount = $event.target.value"
+            >
+            
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="Market Size"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="threshold = $event.target.value"
+            >
+    
+        </div>
+
+
+        <div class="flex items-center space-x-6 m-2 ml-auto">
+
+            <!-- Character limit. -->
+            <div :class="characterLimitColour">
+                {{ characterLimit }} left
+            </div>
+
+            <!-- PostContent button. -->
+            <button
+                class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
+                :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
+                @click="send"
+            >
+                Post
+            </button>
+        </div>
+    </div>
+    </div>
+
+    <div v-else>
+             <!-- Upload input -->
+             <div class="relative m-2 mr-4">
+  <input
+    id="imageUpload"
+    type="file"
+    accept=".mp3, .wav, .ogg, .mp4, .webm"
+    @change="handleImageUpload"
+    class="hidden"
+  >
+  <button
+    class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
+    @click="handleImageUpload"
+  >
+    Upload Video
+  </button>
+</div>
+
+      <!-- Content field. -->
+    <textarea
+        ref="textarea"
+        rows="1"
+        class="text-xl rounded w-full focus:outline-none pl-5 py-5 resize-none mb-3 bg-gray-500"
+        placeholder="Say something smart or post a link..."
+        v-model="content"
+    ></textarea>
+
+    <div class="flex flex-wrap items-center justify-between -m-2">
+
+        <!-- Topic field. -->
+        <div class="relative m-2 mr-4">
+            <input
+                type="text"
+                placeholder="Market Prompt"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                :value="effectiveTopic"
+                :disabled="forcedTopic"
+                @input="topic = $event.target.value"
+            >
+           
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="SOL"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="amount = $event.target.value"
+            >
+            
+        </div>
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="Market Size"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="threshold = $event.target.value"
+            >
+    
+        </div>
+
+
+        <div class="flex items-center space-x-6 m-2 ml-auto">
+
+            <!-- Character limit. -->
+            <div :class="characterLimitColour">
+                {{ characterLimit }} left
+            </div>
+
+            <!-- PostContent button. -->
+            <button
+                class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
+                :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
+                @click="send"
+            >
+                Post
+            </button>
+        </div>
+    </div>
+    </div>
+  </div>
+
+    </div>
+
     <div v-else class="px-8 py-4 bg-gray-50 text-gray-500 text-center border-b">
         Connect your wallet to start posting...
     </div>
 </template>
+
+<style>
+.tabs {
+  display: flex;
+  justify-content: center;
+}
+
+.tab {
+  padding: 8px 16px;
+  background-color: blue;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  margin: 0 8px;
+}
+
+.tab.active {
+  background-color: darkblue;
+}
+</style>
