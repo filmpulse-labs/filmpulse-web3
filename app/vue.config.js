@@ -14,7 +14,7 @@ module.exports = defineConfig({
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer']
             })
-        ],
+        ], 
         resolve: {
             fallback: {
                 crypto: require.resolve("crypto-browserify"),
