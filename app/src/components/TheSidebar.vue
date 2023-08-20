@@ -6,7 +6,7 @@ const { connected } = useWallet()
 <template>
     <aside class="flex flex-col items-center md:items-stretch space-y-2 md:space-y-4">
         <router-link :to="{ name: 'Home' }" class="inline-block rounded-full hover:bg-gray-700 p-3 md:self-start">
-            <img src="../../public/95977021.png" alt="alternatetext" style="width: 50px; height: 50px;">
+            <img src="../../public/gp.png" alt="alternatetext" style="width: 50px; height: 50px;">
         </router-link>
         <div class="flex flex-col items-center md:items-stretch space-y-2">
             <router-link :to="{ name: 'Home' }" class="rounded-full hover:bg-blue-800 p-3 md:w-full inline-flex items-center space-x-4" active-class="font-bold" v-slot="{ isActive }">

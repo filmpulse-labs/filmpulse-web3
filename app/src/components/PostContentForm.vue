@@ -164,20 +164,20 @@ const handleImageUpload = async (event) => {
             <div class="relative m-2 mr-4">
                 <input
                     type="number"
-                    placeholder="SOL"
-                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
-                    @input="amount = $event.target.value"
-                >
-                
-            </div>
-            <div class="relative m-2 mr-4">
-                <input
-                    type="number"
                     placeholder="Market Size"
                     class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     @input="threshold = $event.target.value"
                 >
         
+            </div>
+            <div class="relative m-2 mr-4">
+                <input
+                    type="number"
+                    placeholder="SOL"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                    @input="amount = $event.target.value"
+                >
+                
             </div>
 
             <div class="flex items-center space-x-6 m-2 ml-auto">
@@ -202,20 +202,15 @@ const handleImageUpload = async (event) => {
     <div v-else-if="activeTab === 'form2'">
       <!-- Upload input -->
       <div class="relative m-2 mr-4">
-        <input
-            id="imageUpload"
-            type="file"
-            accept="text/*"
-            @change="handleImageUpload"
-            class="hidden"
-        >
-        <button
-            class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
-            @click="handleImageUpload"
-        >
-            Upload Text
-        </button>
-    </div>
+            <label for="imageUpload" class="block mb-2 text-blue-800">Upload Text</label>
+            <input
+                id="imageUpload"
+                type="file"
+                accept="text/*"
+                @change="handleImageUpload"
+                class="hidden"
+            >
+        </div>
 
       <!-- Content field. -->
     <textarea
@@ -241,6 +236,15 @@ const handleImageUpload = async (event) => {
             
         </div>
         <div class="relative m-2 mr-4">
+                <input
+                    type="number"
+                    placeholder="Market Size"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                    @input="threshold = $event.target.value"
+                >
+        
+            </div>
+        <div class="relative m-2 mr-4">
             <input
                 type="number"
                 placeholder="SOL"
@@ -248,15 +252,6 @@ const handleImageUpload = async (event) => {
                 @input="amount = $event.target.value"
             >
             
-        </div>
-        <div class="relative m-2 mr-4">
-            <input
-                type="number"
-                placeholder="Market Size"
-                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
-                @input="threshold = $event.target.value"
-            >
-        
         </div>
 
         <div class="flex items-center space-x-6 m-2 ml-auto">
@@ -279,22 +274,16 @@ const handleImageUpload = async (event) => {
     </div>
 
     <div v-else-if="activeTab === 'form3'">
-
-            <div class="relative m-2 mr-4">
-  <input
-    id="imageUpload"
-    type="file"
-    accept="image/*"
-    @change="handleImageUpload"
-    class="hidden"
-  >
-  <button
-    class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
-    @click="handleImageUpload"
-  >
-    Upload Image
-  </button>
-</div>
+        <div class="relative m-2 mr-4">
+            <label for="imageUpload" class="block mb-2 text-blue-800">Upload Image</label>
+            <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                @change="handleImageUpload"
+                class="hidden"
+            >
+        </div>
 
       <!-- Content field. -->
     <textarea
@@ -322,23 +311,22 @@ const handleImageUpload = async (event) => {
         <div class="relative m-2 mr-4">
             <input
                 type="number"
-                placeholder="SOL"
-                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
-                @input="amount = $event.target.value"
-            >
-            
-        </div>
-        <div class="relative m-2 mr-4">
-            <input
-                type="number"
                 placeholder="Market Size"
                 class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                 @input="threshold = $event.target.value"
             >
     
         </div>
-
-
+        <div class="relative m-2 mr-4">
+            <input
+                type="number"
+                placeholder="SOL"
+                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                @input="amount = $event.target.value"
+            >
+            
+        </div>
+        
         <div class="flex items-center space-x-6 m-2 ml-auto">
 
             <!-- Character limit. -->
@@ -361,21 +349,16 @@ const handleImageUpload = async (event) => {
 
     <div v-else-if="activeTab === 'form4'">
             <!-- Upload input -->
-            <div class="relative m-2 mr-4">
-  <input
-    id="imageUpload"
-    type="file"
-    accept=".mp3, .wav, .ogg, .mp4, .webm"
-    @change="handleImageUpload"
-    class="hidden"
-  >
-  <button
-    class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
-    @click="handleImageUpload"
-  >
-    Upload Audio
-  </button>
-</div>
+        <div class="relative m-2 mr-4">
+            <label for="imageUpload" class="block mb-2 text-blue-800">Upload Audio</label>
+            <input
+                id="imageUpload"
+                type="file"
+                accept=".mp3, .wav, .ogg, .mp4, .webm"
+                @change="handleImageUpload"
+                class="hidden"
+            >
+        </div>
 
       <!-- Content field. -->
     <textarea
@@ -401,6 +384,15 @@ const handleImageUpload = async (event) => {
            
         </div>
         <div class="relative m-2 mr-4">
+                <input
+                    type="number"
+                    placeholder="Market Size"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                    @input="threshold = $event.target.value"
+                >
+        
+            </div>
+        <div class="relative m-2 mr-4">
             <input
                 type="number"
                 placeholder="SOL"
@@ -409,16 +401,6 @@ const handleImageUpload = async (event) => {
             >
             
         </div>
-        <div class="relative m-2 mr-4">
-            <input
-                type="number"
-                placeholder="Market Size"
-                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
-                @input="threshold = $event.target.value"
-            >
-    
-        </div>
-
 
         <div class="flex items-center space-x-6 m-2 ml-auto">
 
@@ -442,20 +424,15 @@ const handleImageUpload = async (event) => {
     <div v-else>
              <!-- Upload input -->
              <div class="relative m-2 mr-4">
-  <input
-    id="imageUpload"
-    type="file"
-    accept=".mp3, .wav, .ogg, .mp4, .webm"
-    @change="handleImageUpload"
-    class="hidden"
-  >
-  <button
-    class="px-4 py-2 rounded-full bg-blue-800 text-white hover:bg-blue-700"
-    @click="handleImageUpload"
-  >
-    Upload Video
-  </button>
-</div>
+            <label for="imageUpload" class="block mb-2 text-blue-800">Upload Video</label>
+            <input
+                id="imageUpload"
+                type="file"
+                accept=".mp3, .wav, .ogg, .mp4, .webm"
+                @change="handleImageUpload"
+                class="hidden"
+            >
+        </div>
 
       <!-- Content field. -->
     <textarea
@@ -481,6 +458,15 @@ const handleImageUpload = async (event) => {
            
         </div>
         <div class="relative m-2 mr-4">
+                <input
+                    type="number"
+                    placeholder="Market Size"
+                    class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
+                    @input="threshold = $event.target.value"
+                >
+        
+            </div>
+        <div class="relative m-2 mr-4">
             <input
                 type="number"
                 placeholder="SOL"
@@ -489,16 +475,6 @@ const handleImageUpload = async (event) => {
             >
             
         </div>
-        <div class="relative m-2 mr-4">
-            <input
-                type="number"
-                placeholder="Market Size"
-                class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
-                @input="threshold = $event.target.value"
-            >
-    
-        </div>
-
 
         <div class="flex items-center space-x-6 m-2 ml-auto">
 
@@ -531,6 +507,7 @@ const handleImageUpload = async (event) => {
 .tabs {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap; /* Allow tabs to wrap into new lines */
 }
 
 .tab {
@@ -540,7 +517,7 @@ const handleImageUpload = async (event) => {
   border-radius: 20px;
   color: white;
   cursor: pointer;
-  margin: 0 8px;
+  margin: 8px; /* Adjust margin for spacing between tabs */
 }
 
 .tab.active {
