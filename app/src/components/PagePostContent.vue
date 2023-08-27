@@ -29,5 +29,5 @@ watchEffect(async () => {
     <div v-else-if="! postContent" class="p-8 text-gray-500 text-center">
         PostContent not found
     </div>
-    <postContent-card v-else :postContent="postContent" @delete="$router.push({ name: 'Home' })"></postContent-card>
+    <postContent-card v-else :postContent="postContent" @delete="$router.push({ name: 'Feed' })"></postContent-card>
 </template>

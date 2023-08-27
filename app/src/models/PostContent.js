@@ -6,7 +6,7 @@ export class PostContent
         this.publicKey = publicKey
         this.poster = accountData.poster
         this.timestamp = accountData.timestamp.toString()
-        this.topic = accountData.topic
+        this.market = accountData.market
         this.content = accountData.contentLink
         this.amount = accountData.amount/1000000000
         this.threshold = accountData.validatorThreshold

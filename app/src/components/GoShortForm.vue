@@ -35,7 +35,7 @@ const validate = async () => {
         <div class="px-8 py-4 border-l-4 border-blue-800">
             <div class="py-1">
                 <h3 class="inline font-semibold" :title="postContent.author">
-                    <router-link :to="{ name: 'Profile' }" class="hover:underline">
+                    <router-link :to="{ name: 'Account' }" class="hover:underline">
                         {{ postContent.author_display }}
                     </router-link>
                 </h3>
@@ -49,8 +49,8 @@ const validate = async () => {
             
             <!-- Content field. -->
             <div class="flex flex-wrap items-center justify-between -m-2">
-            <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
-                #{{ postContent.topic }}
+            <router-link v-if="postContent.market" :to="{ name: 'Markets', params: { market: postContent.market } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
+                #{{ postContent.market }}
             </router-link>
             <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
                         -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;" class="m-2 mr-4">

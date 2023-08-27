@@ -122,12 +122,12 @@ export const authorFilter = authorBase58PublicKey => ({
     }
 })
 
-export const topicFilter = topic => ({
+export const marketFilter = market => ({
     memcmp: {
         offset: 8 + // Discriminator.
             32 + // Author public key.
             8 + // Timestamp.
             4, // Topic string prefix.
-        bytes: bs58.encode(Buffer.from(topic)),
+        bytes: bs58.encode(Buffer.from(market)),
     }
 })

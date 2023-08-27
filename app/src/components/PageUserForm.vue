@@ -39,14 +39,14 @@ fetchUser(wallet.value.publicKey).then(res => {
 })
 
 // Actions.
-const setProfile = async () => {
+const setAccount = async () => {
     console.log(name.value, avatar.value)
     await createUser(name.value, avatar.value)
     name.value = ''
     avatar.value = ''
 }
 
-const updateProfile = async () => {
+const updateAccount = async () => {
     console.log(name.value, avatar.value)
     await updateUser(name.value, avatar.value)
     name.value = ''
@@ -88,9 +88,9 @@ const updateProfile = async () => {
                 <button v-if="!profileExists"
                     class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
                     :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
-                    @click="setProfile"
+                    @click="setAccount"
                 >
-                    Set Profile
+                    Set Account
                 </button>
                 
 
@@ -98,9 +98,9 @@ const updateProfile = async () => {
                 <button v-if="profileExists"
                     class="text-white px-4 py-2 rounded-full font-semibold" :disabled="! canPostContent"
                     :class="canPostContent ? 'bg-blue-800' : 'bg-blue-800 cursor-not-allowed'"
-                    @click="updateProfile"
+                    @click="updateAccount"
                 >
-                    Update Profile
+                    Update Account
                 </button>
             </div>
         </div>

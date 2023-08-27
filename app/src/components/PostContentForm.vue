@@ -14,11 +14,11 @@ const { forcedTopic } = toRefs(props)
 // Form data.
 const arweaveLink = ref(''); // Added ref for Arweave link
 const content = ref('')
-const topic = ref('')
+const market = ref('')
 const amount = ref()
 const activeTab = ref('form1');
 const threshold = ref()
-const slugTopic = useSlug(topic)
+const slugTopic = useSlug(market)
 const effectiveTopic = computed(() => forcedTopic.value ?? slugTopic.value)
 
 // Auto-resize the content's textarea.
@@ -41,9 +41,9 @@ const canPostContent = computed(() => content.value && characterLimit.value > 0)
 const emit = defineEmits(['added'])
 const send = async () => {
     if (! canPostContent.value) return
-    const postContent = await sendPostContent(content.value, topic.value, amount.value, threshold.value)
+    const postContent = await sendPostContent(content.value, market.value, amount.value, threshold.value)
     emit('added', postContent)
-    topic.value = ''
+    market.value = ''
     content.value = ''
     amount.value = ''
     threshold.value = ''
@@ -157,7 +157,7 @@ const handleImageUpload = async (event) => {
                     class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                     :value="effectiveTopic"
                     :disabled="forcedTopic"
-                    @input="topic = $event.target.value"
+                    @input="market = $event.target.value"
                 >
             
             </div>
@@ -231,7 +231,7 @@ const handleImageUpload = async (event) => {
                 class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                 :value="effectiveTopic"
                 :disabled="forcedTopic"
-                @input="topic = $event.target.value"
+                @input="market = $event.target.value"
             >
             
         </div>
@@ -304,7 +304,7 @@ const handleImageUpload = async (event) => {
                 class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                 :value="effectiveTopic"
                 :disabled="forcedTopic"
-                @input="topic = $event.target.value"
+                @input="market = $event.target.value"
             >
            
         </div>
@@ -379,7 +379,7 @@ const handleImageUpload = async (event) => {
                 class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                 :value="effectiveTopic"
                 :disabled="forcedTopic"
-                @input="topic = $event.target.value"
+                @input="market = $event.target.value"
             >
            
         </div>
@@ -453,7 +453,7 @@ const handleImageUpload = async (event) => {
                 class="text-blue-800 rounded-full pl-5 pr-1 py-2 bg-gray-500"
                 :value="effectiveTopic"
                 :disabled="forcedTopic"
-                @input="topic = $event.target.value"
+                @input="market = $event.target.value"
             >
            
         </div>

@@ -32,7 +32,7 @@
           "type": "string"
         },
         {
-          "name": "topic",
+          "name": "market",
           "type": "string"
         },
         {
@@ -222,7 +222,7 @@
             "type": "i64"
           },
           {
-            "name": "topic",
+            "name": "market",
             "type": "string"
           },
           {

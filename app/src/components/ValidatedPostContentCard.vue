@@ -18,9 +18,9 @@ const { wallet } = useWorkspace()
 const isMyPostContent = computed(() => wallet.value && wallet.value.publicKey.toBase58() === postContent.value.poster.toBase58())
 const authorRoute = computed(() => {
     if (isMyPostContent.value) {
-        return { name: 'Profile' }
+        return { name: 'Account' }
     } else {
-        return { name: 'Users', params: { author: postContent.value.poster.toBase58() } }
+        return { name: 'Accounts', params: { author: postContent.value.poster.toBase58() } }
     }
 })
 
@@ -78,8 +78,8 @@ onMounted(async () => {
             </div>
         </div>
         <div class="flex flex-wrap items-center justify-between -m-2">
-            <router-link v-if="postContent.topic" :to="{ name: 'Topics', params: { topic: postContent.topic } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
-                #{{ postContent.topic }}
+            <router-link v-if="postContent.market" :to="{ name: 'Markets', params: { market: postContent.market } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
+                #{{ postContent.market }}
             </router-link>
             <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
                         -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;" class="m-2 mr-4">

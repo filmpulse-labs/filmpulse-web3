@@ -13,7 +13,7 @@ const commitment = 'processed'
 const programID = new PublicKey(idl.metadata.address)
 let workspace = null
 
-export const sendPostContent = async (content, topic, amount, threshold) => {
+export const sendPostContent = async (content, market, amount, threshold) => {
  
     const wallet = useAnchorWallet()
     const connection = new Connection(clusterUrl, commitment)
@@ -62,9 +62,9 @@ export const sendPostContent = async (content, topic, amount, threshold) => {
     console.log("Wallet: " + wallet)
     console.log("Content pda: " + contentPDA);
     console.log("cluster: " + clusterUrl)
-    console.log(content, topic, amount, threshold)
+    console.log(content, market, amount, threshold)
 
-    await program.value.methods.postV0(content, topic, new anchor.BN(amount * 1000000000), new anchor.BN(threshold), new anchor.BN(postCounter))
+    await program.value.methods.postV0(content, market, new anchor.BN(amount * 1000000000), new anchor.BN(threshold), new anchor.BN(postCounter))
         .accounts({    
             content: contentPDA,
             poster: workspace.wallet.value.publicKey,

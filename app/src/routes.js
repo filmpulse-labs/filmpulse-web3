@@ -1,18 +1,18 @@
 export default [
     {
-        name: 'Home',
+        name: 'Feed',
         path: '/',
-        component: require('@/components/PageHome').default,
+        component: require('@/components/PageFeed').default,
     },
     {
-        name: 'Topics',
-        path: '/topics/:topic?',
-        component: require('@/components/PageTopics').default,
+        name: 'Markets',
+        path: '/markets/:market?',
+        component: require('@/components/PageMarkets').default,
     },
     {
-        name: 'Users',
+        name: 'Accounts',
         path: '/users/:author?',
-        component: require('@/components/PageUsers').default,
+        component: require('@/components/PageAccounts').default,
     },
     {
         name: 'Validated',
@@ -20,9 +20,9 @@ export default [
         component: require('@/components/PageValidated').default,
     },
     {
-        name: 'Profile',
+        name: 'Account',
         path: '/profile',
-        component: require('@/components/PageProfile').default,
+        component: require('@/components/PageAccount').default,
     },
     {
         name: 'PostContent',
