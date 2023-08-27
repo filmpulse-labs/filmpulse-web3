@@ -66,7 +66,7 @@ try {
             </svg>
         </template>
     </post-search>
-    <div class="border-b px-8 py-4 bg-gray-500 break-all" style="display: flex; align-items: center;">
+    <div v-if="viewedAuthor" class="border-b px-8 py-4 bg-gray-500 break-all" style="display: flex; align-items: center;">
         <img style="border-radius: 50%; max-height: 100px; max-width: 100px; margin-right: 16px; object-fit: cover; aspect-ratio: 1/1;" :src="useravatar" alt="User Avatar">
     <div>
         <h1 style="font-size: 24px; margin-bottom: 8px;">{{ username }}</h1>

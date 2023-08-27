@@ -52,6 +52,18 @@ onMounted(async () => {
         console.log(error)
     }
 })
+
+function formatContent(content) {
+      // Regular expression to identify URLs in the content
+      const urlRegex = /((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/g;
+
+      // Replace URLs with clickable anchor tags
+      const formattedContent = content.replace(urlRegex, (url) => {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+      });
+
+      return formattedContent;
+    }
 </script>
 
 <template>
@@ -91,10 +103,11 @@ onMounted(async () => {
                 #{{ postContent.market }}
             </router-link>
             <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
-                        -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;" class="m-2 mr-4">
-                <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-text="postContent.content">
-                </p>
-            </div>
+      -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;"
+      class="m-2 mr-4">
+    <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-html="formatContent(postContent.content)">
+    </p>
+  </div>
             
             <div class="m-2 mr-4" style="transform: scale(0.75);">
                 Poster Stake
