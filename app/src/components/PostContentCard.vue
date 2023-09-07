@@ -77,13 +77,13 @@ function formatContent(content) {
 
                 <div class="flex items-center">
                     <img style="border-radius: 50%; max-height: 50px; max-width: 50px; margin-right: 16px; object-fit: cover; aspect-ratio: 1/1;" :src="useravatar" alt="User Avatar">
-                    <h1 class="inline font-semibold text-lg" :title="username">
+                    <h1 class="inline text-gray-500 font-semibold text-lg" :title="username">
                     
                             {{ username }}
                       
                     </h1>
                 </div>
-                    <h3 class="inline font-semibold" :title="postContent.author">
+                    <h3 class="text-gray-500 inline font-semibold" :title="postContent.author">
                             {{ postContent.author_display }}
                         
                     </h3>
@@ -109,12 +109,12 @@ function formatContent(content) {
     </p>
   </div>
             
-            <div class="m-2 mr-4" style="transform: scale(0.75);">
+            <div class="text-gray-500 m-2 mr-4" style="transform: scale(0.75);">
                 Poster Stake
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.amount"></p>
             </div>
             
-            <div class="m-2 mr-4" style="transform: scale(0.75);">
+            <div class="text-gray-500 m-2 mr-4" style="transform: scale(0.75);">
                 Market Size
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.threshold"></p>
             </div>
@@ -126,7 +126,7 @@ function formatContent(content) {
                 Short Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.shortPool"></p>
             </div> -->
-            <div class="m-2 mr-4" style="transform: scale(0.75);">
+            <div class="text-gray-500 m-2 mr-4" style="transform: scale(0.75);">
                 Total Pool
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.totalPool"></p>
             </div>
@@ -134,7 +134,7 @@ function formatContent(content) {
                 Validator Count
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="postContent.validatorCount"></p>
             </div> -->
-            <div class="m-2 mr-4" style="transform: scale(0.75);">
+            <div class="text-gray-500 m-2 mr-4" style="transform: scale(0.75);">
                 Market Open
                 <p class="text-blue-800 rounded-full pl-10 pr-4 py-2 bg-gray-500" v-text="!postContent.validatorThresholdReached"></p>
             </div>

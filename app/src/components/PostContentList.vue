@@ -10,15 +10,22 @@ const props = defineProps({
 })
 
 const { posts, loading, hasMore } = toRefs(props)
+
 const orderedposts = computed(() => {
-    return posts.value.slice().sort((a, b) => b.timestamp - a.timestamp)
+    return posts.value.slice().sort((a, b) => 
+    b.timestamp - a.timestamp)
 })
 
 </script>
 
 <template>
     <div class="divide-y">
-        <postContent-card v-for="postContent in orderedposts" :key="postContent.key" :postContent="postContent"></postContent-card>
+        <transition-group name="fade" tag="div">
+            <div v-for="postContent in orderedposts" :key="postContent.key">
+                <postContent-card :postContent="postContent"></postContent-card>
+            </div>
+        </transition-group>
+        <!-- <postContent-card v-for="postContent in orderedposts" :key="postContent.key" :postContent="postContent"></postContent-card> -->
         <div v-if="loading" class="p-8 text-gray-500 text-center">
             Loading...
         </div>
@@ -29,3 +36,21 @@ const orderedposts = computed(() => {
         </div>
     </div>
 </template>
+
+<style>
+
+.fade-enter-from {
+    opacity: 0;
+    transform: scale(0.3);
+}
+
+.fade-enter-to {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.fade-enter-active {
+    transition: all 0.4s ease;
+}
+
+</style>

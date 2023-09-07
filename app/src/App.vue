@@ -24,8 +24,8 @@ initWorkspace()
 
         <!-- Main -->
         <main class="flex-1 border-r border-l ml-20 md:ml-64 min-h-screen">
-            <header class="flex space-x-6 items-center justify-between px-8 py-4 border-b">
-                <div class="text-xl font-bold" v-text="route.name"></div>
+            <header class="text-grey-500 flex space-x-6 items-center justify-between px-8 py-4 border-b">
+                <div style="color: #9E9E9E;" class="text-grey-500 text-xl font-bold" v-text="route.name"></div>
                 
             </header>
             <router-view></router-view>

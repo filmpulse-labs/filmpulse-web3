@@ -3,7 +3,7 @@ import { computed, ref, toRefs } from 'vue'
 import { useAutoresizeTextarea, useCountCharacterLimit, useSlug } from '@/composables'
 import { sendPostContent } from '@/api'
 import { useWallet } from 'solana-wallets-vue'
-import Bundlr from "@bundlr-network/client";
+import { WebBundlr } from "@bundlr-network/client";
 
 // Props.
 const props = defineProps({
@@ -49,33 +49,34 @@ const send = async () => {
     threshold.value = ''
 }
 
-const uploadViaBundlr = async (file) => {
+async function uploadViaBundlr(file) {
     try {
 
-        let wallet = useWallet()
+        let wallet = useWallet();
 
-        const bundlr = new Bundlr("https://devnet.bundlr.network", "solana", wallet.wallet.value, {
-            providerUrl: "https://api.devnet.solana.com",
+        const bundlr = new WebBundlr("https://devnet.bundlr.network", "solana", wallet.wallet.value, {
+        providerUrl: "https://api.devnet.solana.com",
         });
 
         await bundlr.ready();
-        
+
         // Print your wallet address
         console.log(`wallet address = ${bundlr.address}`);
 
         const price = await bundlr.getPrice(file.size);
-        console.log(price)
+        console.log(price);
 
         await bundlr.fund(price);
 
-        const dataToUpload = "GM world.";
+        const buffer = Buffer.from(file, "utf-8")
 
-        const response = await bundlr.upload(dataToUpload);
-        
+        const tags = [{ name: "Content-Type", value: "image/png" }];
+        const response = await bundlr.upload(buffer, { tags: tags });
+
         arweaveLink.value = "https://arweave.net/" + response.id;
 
         console.log(`Data Available at => https://arweave.net/${response.id}`);
-	
+
     } catch (error) {
         console.error('Error uploading via Bundlr:', error);
         // Handle error as needed
