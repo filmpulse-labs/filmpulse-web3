@@ -49,7 +49,7 @@ const send = async () => {
     threshold.value = ''
 }
 
-async function uploadViaBundlr(file) {
+async function uploadViaBundlr(file, contentType) {
     try {
 
         let wallet = useWallet();
@@ -60,17 +60,14 @@ async function uploadViaBundlr(file) {
 
         await bundlr.ready();
 
-        // Print your wallet address
-        console.log(`wallet address = ${bundlr.address}`);
-
         const price = await bundlr.getPrice(file.size);
-        console.log(price);
 
         await bundlr.fund(price);
 
-        const buffer = Buffer.from(file, "utf-8")
+        const fileContent = await readFileAsync(file);
+        const buffer = Buffer.from(fileContent);
 
-        const tags = [{ name: "Content-Type", value: "image/png" }];
+        const tags = [{ name: "Content-Type", value: contentType }];
         const response = await bundlr.upload(buffer, { tags: tags });
 
         arweaveLink.value = "https://arweave.net/" + response.id;
@@ -83,11 +80,23 @@ async function uploadViaBundlr(file) {
     }
 }
 
-// Function to handle image upload
-const handleImageUpload = async (event) => {
+async function readFileAsync(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            resolve(event.target.result);
+        };
+        reader.onerror = (event) => {
+            reject(event.target.error);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
-        await uploadViaBundlr(file);
+        await uploadViaBundlr(file, file.type);
         // Fill the content field with the Arweave link
         content.value = arweaveLink.value;
     }
@@ -207,8 +216,8 @@ const handleImageUpload = async (event) => {
             <input
                 id="imageUpload"
                 type="file"
-                accept="text/*"
-                @change="handleImageUpload"
+                accept="application/*"
+                @change="handleFileUpload"
                 class="hidden"
             >
         </div>
@@ -281,7 +290,7 @@ const handleImageUpload = async (event) => {
                 id="imageUpload"
                 type="file"
                 accept="image/*"
-                @change="handleImageUpload"
+                @change="handleFileUpload"
                 class="hidden"
             >
         </div>
@@ -356,7 +365,7 @@ const handleImageUpload = async (event) => {
                 id="imageUpload"
                 type="file"
                 accept=".mp3, .wav, .ogg, .mp4, .webm"
-                @change="handleImageUpload"
+                @change="handleFileUpload"
                 class="hidden"
             >
         </div>
@@ -430,7 +439,7 @@ const handleImageUpload = async (event) => {
                 id="imageUpload"
                 type="file"
                 accept=".mp3, .wav, .ogg, .mp4, .webm"
-                @change="handleImageUpload"
+                @change="handleFileUpload"
                 class="hidden"
             >
         </div>
