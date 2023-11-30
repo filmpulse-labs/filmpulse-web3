@@ -57,13 +57,38 @@ function formatContent(content) {
       // Regular expression to identify URLs in the content
       const urlRegex = /((https?|ftp):\/\/[^\s/$.?#].[^\s]*)/g;
 
-      // Replace URLs with clickable anchor tags
-      const formattedContent = content.replace(urlRegex, (url) => {
-        return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-      });
+        // Replace URLs with clickable anchor tags
+  const formattedContent = content.replace(urlRegex, (url) => {
+    // Check if the URL is a YouTube link
+    if (isYouTubeLink(url)) {
+      // Extract the video ID from the YouTube link
+      const videoId = extractYouTubeVideoId(url);
+
+      // Create a web preview with the YouTube thumbnail
+      const youtubeThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">
+                <img src="${youtubeThumbnail}" alt="YouTube Thumbnail">
+              </a>`;
+    } else {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    }
+  });
 
       return formattedContent;
     }
+
+    const isYouTubeLink = (url) => {
+  // Regular expression to identify YouTube links
+  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  return youtubeRegex.test(url);
+};
+
+const extractYouTubeVideoId = (url) => {
+  // Regular expression to extract the video ID from a YouTube link
+  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(youtubeRegex);
+  return match ? match[1] : null;
+};
 </script>
 
 <template>
@@ -99,15 +124,18 @@ function formatContent(content) {
       
 
         <div class="flex flex-wrap items-center justify-between -m-2">
-            <router-link v-if="postContent.market" :to="{ name: 'Markets', params: { market: postContent.market } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
-                #{{ postContent.market }}
-            </router-link>
-            <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
+                <!-- Display postContent.market -->
+    <router-link v-if="postContent.market" :to="{ name: 'Markets', params: { market: postContent.market } }" class="inline-block mt-2 text-blue-500 hover:underline break-all">
+      #{{ postContent.market }}
+    </router-link>
+
+    <!-- Display postContent.content -->
+    <div style="-ms-word-break: break-all; word-break: break-all; word-break: break-word;
       -webkit-hyphens: auto; -moz-hyphens: auto; -ms-hyphens: auto; hyphens: auto;"
       class="m-2 mr-4">
-    <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-html="formatContent(postContent.content)">
-    </p>
-  </div>
+      <p class="text-blue-800 rounded pl-4 pr-4 py-2 bg-gray-500" v-html="formatContent(postContent.content)">
+      </p>
+    </div>
             
             <div class="text-gray-500 m-2 mr-4" style="transform: scale(0.75);">
                 Poster Stake

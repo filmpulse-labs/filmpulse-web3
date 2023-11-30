@@ -10,19 +10,12 @@ import { Connection, PublicKey } from '@solana/web3.js'
 import { AnchorProvider, Program } from '@project-serum/anchor'
 import idl from '@/idl/gopulse.json' 
 
-export const fetchposts = async (filters = []) => {
-    const clusterUrl = process.env.VUE_APP_CLUSTER_URL
-    const preflightCommitment = 'processed'
-    const commitment = 'processed'
-    const programID = new PublicKey(idl.metadata.address)
-    let workspace = null
-    const wallet = useAnchorWallet()
-    const connection = new Connection(clusterUrl, commitment)
-    const provider = computed(() => new AnchorProvider(connection, wallet.value, { preflightCommitment, commitment }))
-    const program = computed(() => new Program(idl, programID, provider.value))
+export const fetchPosts = async () => {
+    const { program } = useWorkspace()
 
     const posts = await program.value.account.content.all();
-    return posts.map(postContent => new PostContent(postContent.publicKey, postContent.account))
+    console.log(posts)
+    return posts
 }
 
 export const fetchvalidatedposts = async (filters = []) => {
